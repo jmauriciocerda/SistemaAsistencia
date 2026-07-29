@@ -1,1 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcaje de Asistencia</title>
+</head>
 
+<body>
+
+    <h1>Control de Asistencia</h1>
+
+    <label>Nombre trabajador:</label>
+    <br>
+    <input type="text" id="nombre" placeholder="Ingrese su nombre">
+
+    <br><br>
+
+    <button onclick="marcar('Entrada')">
+        Marcar Entrada
+    </button>
+
+    <button onclick="marcar('Salida')">
+        Marcar Salida
+    </button>
+
+    <p id="resultado"></p>
+
+
+<script>
+
+function marcar(tipo){
+
+    let nombre = document.getElementById("nombre").value;
+
+    let fecha = new Date();
+
+    let registro = 
+    nombre + " - " + 
+    tipo + " - " +
+    fecha.toLocaleString();
+
+    document.getElementById("resultado").innerHTML = registro;
+
+}
+
+</script>
+
+</body>
+</html>
