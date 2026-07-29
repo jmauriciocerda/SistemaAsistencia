@@ -35,12 +35,34 @@ function marcar(tipo){
 
     let fecha = new Date();
 
-    let registro = 
-    nombre + " - " + 
-    tipo + " - " +
-    fecha.toLocaleString();
+    let datos = {
+        nombre: nombre,
+        tipo: tipo,
+        fecha: fecha.toLocaleDateString(),
+        hora: fecha.toLocaleTimeString()
+    };
 
-    document.getElementById("resultado").innerHTML = registro;
+
+    fetch("https://script.google.com/macros/s/AKfycbzrMlbqCdsJjuH84H3RrOY5JSeF-H8FsiORvkTOm8Es0uIv3OD0B_c_wJ_s8F-YyZwiRg/exec", {
+        method: "POST",
+        body: JSON.stringify(datos)
+    })
+    .then(respuesta => respuesta.text())
+    .then(resultado => {
+
+        document.getElementById("resultado").innerHTML =
+        "Marcaje registrado: " + 
+        nombre + " - " + tipo;
+
+    })
+    .catch(error => {
+
+        document.getElementById("resultado").innerHTML =
+        "Error al registrar";
+
+        console.log(error);
+
+    });
 
 }
 
