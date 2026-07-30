@@ -24,9 +24,13 @@ body {
 
 .logo {
 
-    width: 180px;
+    width: 200px;
+    height: auto;
+
+    object-fit: contain;
 
     margin-bottom: 20px;
+
 
 }
 
