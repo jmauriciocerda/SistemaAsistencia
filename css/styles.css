@@ -1,5 +1,19 @@
 body{
-    background:red !important;
+
+    font-family: "Segoe UI", Arial, sans-serif;
+
+    background: linear-gradient(180deg,#7ec8ff 0%,#eaf6ff 100%);
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:20px;
+
 }
 /* ==========================
    CONTROL ASISTENCIA
