@@ -1,4 +1,4 @@
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzML1F1V0dQsz_v3Qld4v0LsGZ6TwDZ5m2KonWz57jVmtmr33seKBgHtYKhiEezW1-l/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbx-Zj0MiqtbN-h7JB0XIEmyk1LvQtIJM1zol5iqSdJT7NB_IJ2m3_4bc80CCE-HhoZ_/exec";
 
 
 let trabajadorActual = "";
