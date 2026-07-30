@@ -50,17 +50,8 @@ body{
 }
 
 .logo{
-
-    width:110px;
-
-    max-width:110px;
-
-    height:auto;
-
     display:block;
-
     margin:0 auto 15px auto;
-
 }
 
 .header h1{
