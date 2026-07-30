@@ -17,6 +17,8 @@ function cargarTrabajador(){
 
     const id = parametros.get("ID");
 
+    console.log("URL completa:", window.location.href);
+    console.log("ID detectado:", id);
 
     if(!id){
 
