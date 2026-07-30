@@ -11,9 +11,9 @@
 
 body{
 
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Segoe UI", Arial, sans-serif;
 
-    background: linear-gradient(180deg,#d9efff 0%, #eef7ff 100%);
+    background: linear-gradient(180deg,#7ec8ff 0%,#eaf6ff 100%);
 
     min-height:100vh;
 
@@ -30,45 +30,49 @@ body{
 .app{
 
     width:100%;
-
-    max-width:420px;
+    max-width:430px;
 
 }
 
 .header{
 
-    background:#2a8fd8;
+    background:linear-gradient(135deg,#2196F3,#1565C0);
 
     color:white;
 
+    padding:30px;
+
     text-align:center;
 
-    padding:25px;
-
-    border-radius:20px 20px 0 0;
+    border-radius:22px 22px 0 0;
 
 }
 
 .logo{
+
     display:block;
+
     margin:0 auto 15px auto;
+
 }
 
 .header h1{
 
     font-size:28px;
 
-    margin-bottom:5px;
+    font-weight:700;
 
 }
 
 .header h2{
 
+    margin-top:8px;
+
     font-size:18px;
 
-    font-weight:normal;
+    font-weight:400;
 
-    opacity:.9;
+    opacity:.95;
 
 }
 
@@ -78,9 +82,9 @@ body{
 
     padding:30px;
 
-    border-radius:0 0 20px 20px;
+    border-radius:0 0 22px 22px;
 
-    box-shadow:0 10px 25px rgba(0,0,0,.15);
+    box-shadow:0 15px 35px rgba(0,0,0,.18);
 
 }
 
@@ -88,13 +92,13 @@ body{
 
     text-align:center;
 
-    font-size:18px;
-
-    color:#2a8fd8;
+    color:#1976D2;
 
     font-weight:bold;
 
-    margin-bottom:25px;
+    font-size:18px;
+
+    margin-bottom:30px;
 
 }
 
@@ -108,11 +112,11 @@ body{
 
     display:block;
 
-    margin-bottom:8px;
+    margin-bottom:10px;
 
-    color:#444;
+    color:#555;
 
-    font-weight:bold;
+    font-weight:600;
 
 }
 
@@ -120,25 +124,25 @@ body{
 
     width:100%;
 
-    padding:14px;
+    padding:15px;
 
-    border-radius:10px;
+    border-radius:12px;
 
-    border:1px solid #d0d0d0;
+    border:2px solid #d8e7f5;
 
-    font-size:16px;
+    font-size:17px;
 
-    transition:.2s;
+    transition:.25s;
 
 }
 
 .campo input:focus{
 
+    border-color:#2196F3;
+
     outline:none;
 
-    border-color:#2a8fd8;
-
-    box-shadow:0 0 8px rgba(42,143,216,.25);
+    box-shadow:0 0 12px rgba(33,150,243,.20);
 
 }
 
@@ -156,25 +160,27 @@ button{
 
     border:none;
 
-    border-radius:12px;
+    padding:18px;
 
-    padding:16px;
+    border-radius:14px;
+
+    color:white;
 
     font-size:18px;
 
     font-weight:bold;
 
-    color:white;
-
     cursor:pointer;
 
-    transition:.2s;
+    transition:.20s;
 
 }
 
 button:hover{
 
     transform:translateY(-2px);
+
+    box-shadow:0 8px 20px rgba(0,0,0,.20);
 
 }
 
@@ -186,25 +192,13 @@ button:active{
 
 .entrada{
 
-    background:#1fa44a;
-
-}
-
-.entrada:hover{
-
-    background:#18863d;
+    background:linear-gradient(135deg,#24b04b,#16963b);
 
 }
 
 .salida{
 
-    background:#d64545;
-
-}
-
-.salida:hover{
-
-    background:#ba3232;
+    background:linear-gradient(135deg,#ef5350,#d32f2f);
 
 }
 
@@ -214,13 +208,11 @@ button:active{
 
     text-align:center;
 
-    font-size:17px;
-
     font-weight:bold;
 
-    color:#2a8fd8;
+    color:#1976D2;
 
-    min-height:25px;
+    min-height:28px;
 
 }
 
@@ -228,42 +220,10 @@ button:active{
 
     text-align:center;
 
-    margin-top:20px;
+    margin-top:18px;
 
-    color:#5d6d7e;
+    color:white;
 
     font-size:13px;
-
-}
-
-/* Responsive */
-
-@media (max-width:480px){
-
-    .header{
-
-        padding:20px;
-
-    }
-
-    .card{
-
-        padding:20px;
-
-    }
-
-    .logo{
-
-        width:90px;
-
-        max-width:90px;
-
-    }
-
-    .header h1{
-
-        font-size:24px;
-
-    }
 
 }
