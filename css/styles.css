@@ -23,16 +23,12 @@ body {
 
 
 .logo {
-
-    width: 90px;
+    width: 100px !important;
+    max-width: 100px !important;
     height: auto;
-
-    object-fit: contain;
-
-    margin-bottom: 15px;
-
-}
-h1 {
+    display: block;
+    margin: 0 auto 15px auto;
+}h1 {
 
     color: #005b96;
 
