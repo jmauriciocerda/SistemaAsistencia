@@ -1,44 +1,78 @@
-<div class="app">
+<!DOCTYPE html>
+<html lang="es">
 
-    <div class="header">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Asistencia Lecaros SPA</title>
 
-        <img src="assets/logo.png" class="logo" style="width:100px !important; max-width:100px !important;">
+    <link rel="stylesheet" href="css/style.css">
+</head>
 
-        <h1>Control de Asistencia</h1>
+<body>
 
-        <h2>Lecaros SPA</h2>
+    <div class="app">
+
+        <!-- Encabezado -->
+        <header class="header">
+
+            <img src="assets/logo.png" alt="Logo Lecaros SPA" class="logo">
+
+            <h1>Control de Asistencia</h1>
+            <h2>Lecaros SPA</h2>
+
+        </header>
+
+        <!-- Tarjeta principal -->
+        <main class="card">
+
+            <div id="fechaHora" class="fechaHora"></div>
+
+            <div class="campo">
+
+                <label for="nombre">
+                    Nombre del trabajador
+                </label>
+
+                <input
+                    type="text"
+                    id="nombre"
+                    placeholder="Ingrese su nombre">
+
+            </div>
+
+            <div class="botones">
+
+                <button
+                    class="entrada"
+                    onclick="marcar('Entrada')">
+
+                    🟢 Marcar Entrada
+
+                </button>
+
+                <button
+                    class="salida"
+                    onclick="marcar('Salida')">
+
+                    🔴 Marcar Salida
+
+                </button>
+
+            </div>
+
+            <div id="resultado" class="resultado"></div>
+
+        </main>
+
+        <footer class="footer">
+            Sistema de Asistencia © Lecaros SPA
+        </footer>
 
     </div>
 
+    <script src="js/app.js"></script>
 
-    <div class="card">
+</body>
 
-        <div id="fechaHora"></div>
-
-        <label>Nombre trabajador</label>
-
-        <input 
-        id="nombre" 
-        type="text" 
-        placeholder="Ingrese su nombre">
-
-
-        <button 
-        class="entrada"
-        onclick="marcar('Entrada')">
-            🟢 Marcar Entrada
-        </button>
-
-
-        <button 
-        class="salida"
-        onclick="marcar('Salida')">
-            🔴 Marcar Salida
-        </button>
-
-
-        <p id="resultado"></p>
-
-    </div>
-
-</div>
+</html>
