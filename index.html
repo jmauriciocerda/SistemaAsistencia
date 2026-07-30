@@ -1,72 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marcaje de Asistencia</title>
+
+    <title>Control Asistencia Lecaros SPA</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 
 <body>
 
+<div class="container">
+
+    <img src="assets/logo.png" class="logo">
+
     <h1>Control de Asistencia</h1>
-
-    <label>Nombre trabajador:</label>
-    <br>
-    <input type="text" id="nombre" placeholder="Ingrese su nombre">
-
-    <br><br>
-
-    <button onclick="marcar('Entrada')">
-        Marcar Entrada
-    </button>
-
-    <button onclick="marcar('Salida')">
-        Marcar Salida
-    </button>
-
-    <p id="resultado"></p>
+    <h2>Lecaros SPA</h2>
 
 
-<script>
+    <div class="card">
 
-function marcar(tipo){
+        <label>Nombre trabajador</label>
 
-    let nombre = document.getElementById("nombre").value;
-
-    let fecha = new Date();
-
-    let datos = {
-        nombre: nombre,
-        tipo: tipo,
-        fecha: fecha.toLocaleDateString(),
-        hora: fecha.toLocaleTimeString()
-    };
+        <input 
+        id="nombre" 
+        type="text" 
+        placeholder="Ingrese su nombre">
 
 
-    fetch("https://script.google.com/macros/s/AKfycbydqlEiPD8c1es8XOxuJq2xRZi7asPlPHMk2if5uFAclvagcVitybanXCbrJfRBfWwZ/exec", {
-        method: "POST",
-        body: JSON.stringify(datos)
-    })
-    .then(respuesta => respuesta.text())
-    .then(resultado => {
+        <button 
+        class="entrada"
+        onclick="marcar('Entrada')">
+            🟢 Marcar Entrada
+        </button>
 
-        document.getElementById("resultado").innerHTML =
-        "Marcaje registrado: " + 
-        nombre + " - " + tipo;
 
-    })
-    .catch(error => {
+        <button 
+        class="salida"
+        onclick="marcar('Salida')">
+            🔴 Marcar Salida
+        </button>
 
-        document.getElementById("resultado").innerHTML =
-        "Error al registrar";
 
-        console.log(error);
+        <p id="resultado"></p>
 
-    });
+    </div>
 
-}
 
-</script>
+</div>
+
+
+<script src="js/app.js"></script>
 
 </body>
+
 </html>
