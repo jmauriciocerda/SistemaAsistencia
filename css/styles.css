@@ -1,75 +1,73 @@
 body {
 
-    margin: 0;
-    padding: 0;
-
-    font-family: Arial, sans-serif;
-
-    background: #eef6fc;
+    margin:0;
+    background:#eaf4fb;
+    font-family:Arial, sans-serif;
 
 }
 
 
-.container {
+.app {
 
-    width: 90%;
-    max-width: 420px;
+    width:90%;
+    max-width:420px;
+    margin:30px auto;
 
-    margin: 40px auto;
+}
 
-    text-align: center;
+
+.header {
+
+    text-align:center;
+    background:#1683c7;
+    padding:25px;
+    border-radius:20px 20px 0 0;
+    color:white;
 
 }
 
 
 .logo {
-    width: 100px;
-    height: auto;
-    display: block;
-    margin: 0 auto 20px auto;
+
+    width:100px;
+    height:auto;
+    margin-bottom:15px;
+
 }
+
+
 h1 {
 
-    color: #005b96;
-
-    margin-bottom: 5px;
+    font-size:26px;
+    margin:5px;
 
 }
 
 
 h2 {
 
-    color: #4a7fa8;
-
-    font-size: 20px;
-
-    margin-top: 0;
+    font-size:18px;
+    margin:0;
 
 }
 
 
 .card {
 
-    background: white;
-
-    padding: 25px;
-
-    border-radius: 15px;
-
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
+    background:white;
+    padding:25px;
+    border-radius:0 0 20px 20px;
+    box-shadow:0 5px 20px rgba(0,0,0,.15);
 
 }
 
 
-label {
+#fechaHora {
 
-    display:block;
-
-    text-align:left;
-
-    margin-bottom:8px;
-
-    color:#555;
+    text-align:center;
+    margin:20px 0;
+    font-size:18px;
+    color:#005b96;
 
 }
 
@@ -77,41 +75,25 @@ label {
 input {
 
     width:90%;
-
-    padding:12px;
-
-    margin-bottom:20px;
-
-    border-radius:8px;
-
+    padding:14px;
+    border-radius:10px;
     border:1px solid #ccc;
-
     font-size:16px;
-
 }
-
 
 
 button {
 
     width:100%;
-
-    padding:15px;
-
-    margin:8px 0;
-
+    padding:16px;
+    margin-top:15px;
     border:none;
-
-    border-radius:10px;
-
+    border-radius:12px;
     font-size:18px;
-
+    color:white;
     cursor:pointer;
 
-    color:white;
-
 }
-
 
 
 .entrada {
@@ -121,7 +103,6 @@ button {
 }
 
 
-
 .salida {
 
     background:#c0392b;
@@ -129,13 +110,17 @@ button {
 }
 
 
+button:active {
+
+    transform:scale(.97);
+
+}
+
 
 #resultado {
 
     margin-top:20px;
-
+    text-align:center;
     font-weight:bold;
-
-    color:#005b96;
 
 }
