@@ -22,7 +22,7 @@ function marcar(tipo){
     };
 
 
-    fetch("TU_URL_DE_APPS_SCRIPT", {
+    fetch("https://script.google.com/macros/s/AKfycbxPJIK1_IukBGVU4QfVS8-vYkxvW0KXY3W9wcC_UtzrXODsf79aESIlCGCHVH2U7PI/exec", {
 
         method: "POST",
 
