@@ -1,38 +1,84 @@
-// ==============================
-// IDENTIFICACIÓN POR QR
-// ==============================
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzML1F1V0dQsz_v3Qld4v0LsGZ6TwDZ5m2KonWz57jVmtmr33seKBgHtYKhiEezW1-l/exec";
+
+
+let trabajadorActual = "";
+
 
 window.onload = function(){
 
-    const parametros = new URLSearchParams(window.location.search);
-
-    const trabajador = parametros.get("trabajador");
-
-    const campoNombre = document.getElementById("nombre");
-
-
-    if(trabajador){
-
-        campoNombre.value = trabajador;
-
-        campoNombre.readOnly = true;
-
-        campoNombre.style.backgroundColor = "#eef7ff";
-
-        campoNombre.style.cursor = "not-allowed";
-
-    }
+    cargarTrabajador();
 
 };
 
 
-// ==============================
-// REGISTRO ASISTENCIA
-// ==============================
+function cargarTrabajador(){
+
+    const parametros = new URLSearchParams(window.location.search);
+
+    const id = parametros.get("ID");
+
+
+    if(!id){
+
+        return;
+
+    }
+
+
+    fetch(URL_SCRIPT + "?ID=" + id)
+
+    .then(respuesta => respuesta.json())
+
+    .then(datos => {
+
+
+        if(datos.error){
+
+            document.getElementById("resultado").innerHTML =
+            "⚠️ Trabajador no encontrado";
+
+            return;
+
+        }
+
+
+        trabajadorActual = datos.nombre;
+
+
+        document.getElementById("nombre").value = datos.nombre;
+
+
+        document.getElementById("nombre").disabled = true;
+
+
+    })
+
+
+    .catch(error => {
+
+        console.log(error);
+
+        document.getElementById("resultado").innerHTML =
+        "❌ Error cargando trabajador";
+
+    });
+
+}
+
+
+
 
 function marcar(tipo){
 
-    let nombre = document.getElementById("nombre").value;
+
+    let nombre = trabajadorActual;
+
+
+    if(nombre === ""){
+
+        nombre = document.getElementById("nombre").value;
+
+    }
 
 
     if(nombre.trim() === ""){
@@ -45,10 +91,13 @@ function marcar(tipo){
     }
 
 
+
     let fecha = new Date();
 
 
+
     let datos = {
+
 
         nombre: nombre,
 
@@ -58,14 +107,18 @@ function marcar(tipo){
 
         hora: fecha.toLocaleTimeString()
 
+
     };
 
 
-    fetch("https://script.google.com/macros/s/AKfycbxPJIK1_IukBGVU4QfVS8-vYkxvW0KXY3W9wcC_UtzrXODsf79aESIlCGCHVH2U7PI/exec", {
 
-        method: "POST",
+    fetch(URL_SCRIPT, {
 
-        body: JSON.stringify(datos)
+
+        method:"POST",
+
+        body:JSON.stringify(datos)
+
 
     })
 
@@ -94,7 +147,6 @@ function marcar(tipo){
 
 
         document.getElementById("resultado").innerHTML =
-
         "❌ Error al registrar";
 
 
