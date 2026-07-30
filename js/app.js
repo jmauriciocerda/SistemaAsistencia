@@ -1,11 +1,47 @@
+// ==============================
+// IDENTIFICACIÓN POR QR
+// ==============================
+
+window.onload = function(){
+
+    const parametros = new URLSearchParams(window.location.search);
+
+    const trabajador = parametros.get("trabajador");
+
+    const campoNombre = document.getElementById("nombre");
+
+
+    if(trabajador){
+
+        campoNombre.value = trabajador;
+
+        campoNombre.readOnly = true;
+
+        campoNombre.style.backgroundColor = "#eef7ff";
+
+        campoNombre.style.cursor = "not-allowed";
+
+    }
+
+};
+
+
+// ==============================
+// REGISTRO ASISTENCIA
+// ==============================
+
 function marcar(tipo){
 
     let nombre = document.getElementById("nombre").value;
 
+
     if(nombre.trim() === ""){
+
         document.getElementById("resultado").innerHTML =
         "⚠️ Ingrese el nombre del trabajador";
+
         return;
+
     }
 
 
@@ -15,8 +51,11 @@ function marcar(tipo){
     let datos = {
 
         nombre: nombre,
+
         tipo: tipo,
+
         fecha: fecha.toLocaleDateString(),
+
         hora: fecha.toLocaleTimeString()
 
     };
@@ -40,8 +79,11 @@ function marcar(tipo){
         document.getElementById("resultado").innerHTML =
 
         "✅ Registro realizado<br>" +
+
         nombre + "<br>" +
+
         tipo + "<br>" +
+
         fecha.toLocaleTimeString();
 
 
@@ -52,11 +94,14 @@ function marcar(tipo){
 
 
         document.getElementById("resultado").innerHTML =
+
         "❌ Error al registrar";
 
 
         console.log(error);
 
+
     });
+
 
 }
