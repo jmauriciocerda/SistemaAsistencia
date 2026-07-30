@@ -53,15 +53,15 @@ body{
 
 .header{
 
-    background:linear-gradient(135deg,#2196F3,#1565C0);
+    background:#ffffff;
 
-    color:white;
-
-    padding:30px;
+    color:#1565C0;
 
     text-align:center;
 
     border-radius:22px 22px 0 0;
+
+    overflow:hidden;
 
 }
 
@@ -69,7 +69,15 @@ body{
 
     display:block;
 
-    margin:0 auto 15px auto;
+    width:100px;
+
+    max-width:100px;
+
+    height:auto;
+
+    margin:0 auto;
+
+    padding-top:20px;
 
 }
 
