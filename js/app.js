@@ -1,4 +1,3 @@
-alert("APP JS FUNCIONANDO");
 function marcar(tipo){
 
     let nombre = document.getElementById("nombre").value;
