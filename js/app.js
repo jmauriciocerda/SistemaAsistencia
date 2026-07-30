@@ -1,4 +1,3 @@
-alert("APP JS CARGADO");
 function marcar(tipo){
 
     let nombre = document.getElementById("nombre").value;
