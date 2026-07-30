@@ -1,126 +1,278 @@
-body {
+/* ==========================
+   CONTROL ASISTENCIA
+   LECAROS SPA
+========================== */
 
+*{
     margin:0;
-    background:#eaf4fb;
-    font-family:Arial, sans-serif;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: linear-gradient(180deg,#d9efff 0%, #eef7ff 100%);
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:20px;
 
 }
 
-
-.app {
-
-    width:90%;
-    max-width:420px;
-    margin:30px auto;
-
-}
-
-
-.header {
-
-    text-align:center;
-    background:#1683c7;
-    padding:25px;
-    border-radius:20px 20px 0 0;
-    color:white;
-
-}
-
-
-.logo {
-
-    width:100px;
-    height:auto;
-    margin-bottom:15px;
-
-}
-
-
-h1 {
-
-    font-size:26px;
-    margin:5px;
-
-}
-
-
-h2 {
-
-    font-size:18px;
-    margin:0;
-
-}
-
-
-.card {
-
-    background:white;
-    padding:25px;
-    border-radius:0 0 20px 20px;
-    box-shadow:0 5px 20px rgba(0,0,0,.15);
-
-}
-
-
-#fechaHora {
-
-    text-align:center;
-    margin:20px 0;
-    font-size:18px;
-    color:#005b96;
-
-}
-
-
-input {
-
-    width:90%;
-    padding:14px;
-    border-radius:10px;
-    border:1px solid #ccc;
-    font-size:16px;
-}
-
-
-button {
+.app{
 
     width:100%;
-    padding:16px;
-    margin-top:15px;
-    border:none;
-    border-radius:12px;
-    font-size:18px;
+
+    max-width:420px;
+
+}
+
+.header{
+
+    background:#2a8fd8;
+
     color:white;
+
+    text-align:center;
+
+    padding:25px;
+
+    border-radius:20px 20px 0 0;
+
+}
+
+.logo{
+
+    width:110px;
+
+    max-width:110px;
+
+    height:auto;
+
+    display:block;
+
+    margin:0 auto 15px auto;
+
+}
+
+.header h1{
+
+    font-size:28px;
+
+    margin-bottom:5px;
+
+}
+
+.header h2{
+
+    font-size:18px;
+
+    font-weight:normal;
+
+    opacity:.9;
+
+}
+
+.card{
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:0 0 20px 20px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+
+}
+
+.fechaHora{
+
+    text-align:center;
+
+    font-size:18px;
+
+    color:#2a8fd8;
+
+    font-weight:bold;
+
+    margin-bottom:25px;
+
+}
+
+.campo{
+
+    margin-bottom:25px;
+
+}
+
+.campo label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    color:#444;
+
+    font-weight:bold;
+
+}
+
+.campo input{
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:10px;
+
+    border:1px solid #d0d0d0;
+
+    font-size:16px;
+
+    transition:.2s;
+
+}
+
+.campo input:focus{
+
+    outline:none;
+
+    border-color:#2a8fd8;
+
+    box-shadow:0 0 8px rgba(42,143,216,.25);
+
+}
+
+.botones{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
+}
+
+button{
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:16px;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    color:white;
+
     cursor:pointer;
 
-}
-
-
-.entrada {
-
-    background:#16803c;
+    transition:.2s;
 
 }
 
+button:hover{
 
-.salida {
-
-    background:#c0392b;
-
-}
-
-
-button:active {
-
-    transform:scale(.97);
+    transform:translateY(-2px);
 
 }
 
+button:active{
 
-#resultado {
+    transform:scale(.98);
+
+}
+
+.entrada{
+
+    background:#1fa44a;
+
+}
+
+.entrada:hover{
+
+    background:#18863d;
+
+}
+
+.salida{
+
+    background:#d64545;
+
+}
+
+.salida:hover{
+
+    background:#ba3232;
+
+}
+
+.resultado{
+
+    margin-top:25px;
+
+    text-align:center;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    color:#2a8fd8;
+
+    min-height:25px;
+
+}
+
+.footer{
+
+    text-align:center;
 
     margin-top:20px;
-    text-align:center;
-    font-weight:bold;
+
+    color:#5d6d7e;
+
+    font-size:13px;
+
+}
+
+/* Responsive */
+
+@media (max-width:480px){
+
+    .header{
+
+        padding:20px;
+
+    }
+
+    .card{
+
+        padding:20px;
+
+    }
+
+    .logo{
+
+        width:90px;
+
+        max-width:90px;
+
+    }
+
+    .header h1{
+
+        font-size:24px;
+
+    }
 
 }
