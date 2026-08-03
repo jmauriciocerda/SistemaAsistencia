@@ -22,7 +22,7 @@ const RADIO_PERMITIDO = 500; // metros
 
 
 
-let html5QrCode = null;
+let Html5Qrcode = null;
 let scannerActivo = false;
 let trabajadorActual = null;
 
@@ -80,11 +80,11 @@ function iniciarScanner(){
     document.getElementById("reader").style.display="block";
 
 
-    html5QrCode = new Html5QrCode("reader");
+    Html5Qrcode = new Html5Qrcode("reader");
 
 
 
-    html5QrCode.start(
+    Html5Qrcode.start(
 
         {facingMode:"environment"},
 
@@ -758,15 +758,15 @@ function enviarRegistro(datos){
 function detenerScanner(){
 
 
-    if(html5QrCode){
+    if(Html5Qrcode){
 
 
-        html5QrCode.stop()
+        Html5Qrcode.stop()
 
         .then(()=>{
 
 
-            html5QrCode.clear();
+            Html5Qrcode.clear();
 
 
             scannerActivo=false;
