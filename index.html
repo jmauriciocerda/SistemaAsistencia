@@ -2,79 +2,125 @@
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Control de Asistencia Lecaros SPA</title>
 
     <link rel="stylesheet" href="css/styles.css">
+
 </head>
 
 <body>
 
-    <div class="app">
+<div class="app">
 
-        <!-- Encabezado -->
-        <header class="header">
+    <!-- Encabezado -->
 
-            <img src="assets/logo.png"
-     alt="Logo Lecaros SPA"
-     class="logo"
-     style="width:100px; max-width:100px; height:auto;">
+    <header class="header">
 
-            <h1>Control de Asistencia</h1>
-            <h2>Lecaros SPA</h2>
+        <img
+            src="assets/logo.png"
+            alt="Logo Lecaros SPA"
+            class="logo"
+            style="width:100px; max-width:100px; height:auto;">
 
-        </header>
+        <h1>Control de Asistencia</h1>
 
-        <!-- Tarjeta principal -->
-        <main class="card">
+        <h2>Lecaros SPA</h2>
 
-            <div id="fechaHora" class="fechaHora"></div>
+    </header>
 
-            <div class="campo">
+    <!-- Tarjeta principal -->
 
-                <label for="nombre">
-                    Nombre del trabajador
-                </label>
+    <main class="card">
 
-                <input
-                    type="text"
-                    id="nombre"
-                    placeholder="Ingrese su nombre">
+        <div id="fechaHora" class="fechaHora"></div>
 
-            </div>
+        <!-- Lector QR -->
 
-            <div class="botones">
+        <div class="scanner-container">
 
-                <button
-                    class="entrada"
-                    onclick="marcar('Entrada')">
+            <button
+                id="btnScan"
+                class="scan-btn">
 
-                    🟢 Marcar Entrada
+                📷 Escanear credencial
 
-                </button>
+            </button>
 
-                <button
-                    class="salida"
-                    onclick="marcar('Salida')">
+            <div id="reader"></div>
 
-                    🔴 Marcar Salida
+            <p class="scanner-text">
 
-                </button>
+                Acerque su credencial al lector
 
-            </div>
+            </p>
 
-            <div id="resultado" class="resultado"></div>
+        </div>
 
-        </main>
+        <!-- Información trabajador -->
 
-        <footer class="footer">
-            Sistema de Asistencia © Lecaros SPA
-        </footer>
+        <div
+            id="trabajador"
+            class="trabajador oculto">
 
-    </div>
+            <h3 id="nombreTrabajador"></h3>
 
-    <script src="js/app.js"></script>
+            <p id="cargoTrabajador"></p>
+
+        </div>
+
+        <!-- Botones -->
+
+        <div class="botones">
+
+            <button
+                id="btnEntrada"
+                class="entrada"
+                onclick="marcar('Entrada')"
+                disabled>
+
+                🟢 Marcar Entrada
+
+            </button>
+
+            <button
+                id="btnSalida"
+                class="salida"
+                onclick="marcar('Salida')"
+                disabled>
+
+                🔴 Marcar Salida
+
+            </button>
+
+        </div>
+
+        <div
+            id="resultado"
+            class="resultado">
+
+        </div>
+
+    </main>
+
+    <footer class="footer">
+
+        Sistema de Asistencia © Lecaros SPA
+
+    </footer>
+
+</div>
+
+<!-- Librería lector QR -->
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<!-- Aplicación -->
+
+<script src="js/app.js"></script>
 
 </body>
 
