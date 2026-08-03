@@ -22,7 +22,7 @@ const RADIO_PERMITIDO = 500; // metros
 
 
 
-let Html5Qrcode = null;
+let Html5QrCode = null;
 let scannerActivo = false;
 let trabajadorActual = null;
 
