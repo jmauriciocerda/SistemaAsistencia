@@ -2,7 +2,7 @@
 // CONFIGURACIÓN
 //======================================
 
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzv3nXsulWRNqdCJ6W0guVBdHQ9Em4O2PJOIyPMz2xSatVq1fhflcO6BxUnysyQX2nX/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzr3jgLZLJKl1ecUOKbb_O9eHwd0SeGMy0_dGSxkvK7UgQzm5MwKV6uEeRRtFEUXSnU/exec";
 
 let html5QrCode = null;
 let scannerActivo = false;
