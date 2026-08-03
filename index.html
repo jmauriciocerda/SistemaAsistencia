@@ -8,15 +8,19 @@
 
     <title>Control de Asistencia Lecaros SPA</title>
 
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=2">
 
 </head>
+
 
 <body>
 
 <div class="app">
 
-    <!-- Encabezado -->
+
+    <!-- ========================= -->
+    <!-- ENCABEZADO -->
+    <!-- ========================= -->
 
     <header class="header">
 
@@ -32,20 +36,28 @@
 
     </header>
 
-    <!-- Tarjeta principal -->
+
+
+    <!-- ========================= -->
+    <!-- TARJETA PRINCIPAL -->
+    <!-- ========================= -->
 
     <main class="card">
 
-        <!-- Fecha y Hora -->
+
+        <!-- Fecha y hora -->
 
         <div id="fechaHora" class="fechaHora"></div>
+
 
 
         <!-- ========================= -->
         <!-- LECTOR QR -->
         <!-- ========================= -->
 
+
         <div class="scanner-container">
+
 
             <button
                 id="btnScan"
@@ -55,7 +67,11 @@
 
             </button>
 
+
+
             <div id="reader"></div>
+
+
 
             <p class="scanner-text">
 
@@ -63,16 +79,22 @@
 
             </p>
 
+
         </div>
+
+
 
 
         <!-- ========================= -->
         <!-- INGRESO MANUAL -->
         <!-- ========================= -->
 
+
         <hr class="separador">
 
+
         <div class="manual-login">
+
 
             <p class="manual-title">
 
@@ -80,10 +102,14 @@
 
             </p>
 
+
+
             <input
                 type="text"
                 id="rutManual"
                 placeholder="Ingrese su RUT">
+
+
 
             <button
                 id="btnRut"
@@ -94,29 +120,40 @@
 
             </button>
 
+
         </div>
 
 
+
+
         <!-- ========================= -->
-        <!-- DATOS DEL TRABAJADOR -->
+        <!-- DATOS TRABAJADOR -->
         <!-- ========================= -->
+
 
         <div
             id="trabajador"
             class="trabajador oculto">
 
+
             <h3 id="nombreTrabajador"></h3>
+
 
             <p id="cargoTrabajador"></p>
 
+
         </div>
+
+
 
 
         <!-- ========================= -->
         <!-- BOTONES -->
         <!-- ========================= -->
 
+
         <div class="botones">
+
 
             <button
                 id="btnEntrada"
@@ -128,6 +165,8 @@
 
             </button>
 
+
+
             <button
                 id="btnSalida"
                 class="salida"
@@ -138,7 +177,10 @@
 
             </button>
 
+
         </div>
+
+
 
 
         <!-- Resultado -->
@@ -149,7 +191,11 @@
 
         </div>
 
+
+
     </main>
+
+
 
     <footer class="footer">
 
@@ -157,15 +203,28 @@
 
     </footer>
 
+
+
 </div>
 
-<!-- Librería QR -->
 
-<script src="https://unpkg.com/html5-qrcode"></script>
 
-<!-- Aplicación -->
 
-<script src="js/app.js?v=2"></script>
+<!-- ========================= -->
+<!-- LIBRERÍA LECTOR QR -->
+<!-- ========================= -->
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8"></script>
+
+
+
+<!-- ========================= -->
+<!-- APLICACIÓN -->
+<!-- ========================= -->
+
+<script src="js/app.js?v=3"></script>
+
+
 
 </body>
 
