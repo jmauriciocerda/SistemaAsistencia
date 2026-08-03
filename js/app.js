@@ -69,7 +69,6 @@ function iniciarScanner(){
 
         {facingMode:"environment"},
 
-
         {
 
             fps:10,
@@ -124,7 +123,6 @@ function onScanSuccess(decodedText){
 
 
     }
-
 
     catch{
 
@@ -206,9 +204,7 @@ function identificarTrabajador(tipo,valor){
 
     if(tipo==="ID"){
 
-
         consulta="?ID="+encodeURIComponent(valor);
-
 
     }
 
@@ -216,17 +212,11 @@ function identificarTrabajador(tipo,valor){
 
     if(tipo==="RUT"){
 
-
         consulta="?RUT="+encodeURIComponent(valor);
-
 
     }
 
 
-
-    // =================================
-    // PRUEBA DEBUG
-    // =================================
 
     console.log("----------------------------");
 
@@ -234,7 +224,7 @@ function identificarTrabajador(tipo,valor){
 
     console.log("VALOR ENVIADO:", valor);
 
-    console.log("URL CONSULTADA:", URL_SCRIPT + consulta);
+    console.log("URL CONSULTADA:", URL_SCRIPT+consulta);
 
     console.log("----------------------------");
 
@@ -430,11 +420,36 @@ function marcar(tipo){
 
 
 
-    .then(respuesta=>respuesta.text())
+    .then(respuesta=>respuesta.json())
 
 
 
-    .then(()=>{
+    .then(resultado=>{
+
+
+        console.log("RESPUESTA REGISTRO:",resultado);
+
+
+
+        if(!resultado.permitido){
+
+
+            document.getElementById("resultado").innerHTML=
+
+            "⚠️ "+resultado.mensaje;
+
+
+
+            document.getElementById("btnEntrada").disabled=false;
+
+            document.getElementById("btnSalida").disabled=false;
+
+
+            return;
+
+
+        }
+
 
 
         document.getElementById("resultado").innerHTML=
