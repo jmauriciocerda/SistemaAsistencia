@@ -84,7 +84,7 @@ function iniciarScanner(){
 
         alert("No fue posible abrir la cámara.");
 
-    });
+    };
 
 }
 
