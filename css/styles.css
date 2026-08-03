@@ -34,6 +34,10 @@ body{
 
 }
 
+/*==========================
+        HEADER
+===========================*/
+
 .header{
 
     background:#ffffff;
@@ -101,6 +105,10 @@ body{
 
 }
 
+/*==========================
+          CARD
+===========================*/
+
 .card{
 
     background:white;
@@ -128,7 +136,7 @@ body{
 }
 
 /*==========================
-      LECTOR QR
+        LECTOR QR
 ===========================*/
 
 .scanner-container{
@@ -141,15 +149,15 @@ body{
 
     justify-content:center;
 
-    margin-bottom:25px;
+    margin-bottom:20px;
 
 }
 
 .scan-btn{
 
-    background:#1565C0;
-
     width:100%;
+
+    background:#1565C0;
 
     margin-bottom:18px;
 
@@ -175,9 +183,9 @@ body{
 
     overflow:hidden;
 
-    display:none;
+    background:#f7f7f7;
 
-    background:#f5f5f5;
+    display:none;
 
 }
 
@@ -185,16 +193,80 @@ body{
 
     margin-top:15px;
 
-    text-align:center;
-
     color:#666;
 
     font-size:14px;
 
+    text-align:center;
+
 }
 
 /*==========================
-    TRABAJADOR
+      INGRESO POR RUT
+===========================*/
+
+.separador{
+
+    margin:25px 0;
+
+    border:none;
+
+    border-top:1px solid #d9d9d9;
+
+}
+
+.manual-login{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+    margin-bottom:20px;
+
+}
+
+.manual-title{
+
+    text-align:center;
+
+    color:#666;
+
+    font-size:15px;
+
+}
+
+#rutManual{
+
+    width:100%;
+
+    padding:14px;
+
+    border:2px solid #d8e7f5;
+
+    border-radius:12px;
+
+    font-size:17px;
+
+    text-align:center;
+
+    transition:.25s;
+
+}
+
+#rutManual:focus{
+
+    outline:none;
+
+    border-color:#2196F3;
+
+    box-shadow:0 0 12px rgba(33,150,243,.20);
+
+}
+
+/*==========================
+      TRABAJADOR
 ===========================*/
 
 .trabajador{
@@ -240,7 +312,7 @@ body{
 }
 
 /*==========================
-      BOTONES
+         BOTONES
 ===========================*/
 
 .botones{
@@ -311,21 +383,29 @@ button:disabled{
 
 }
 
+/*==========================
+        RESULTADO
+===========================*/
+
 .resultado{
 
     margin-top:25px;
 
     text-align:center;
 
-    font-weight:bold;
-
     color:#1976D2;
+
+    font-weight:bold;
 
     min-height:40px;
 
     line-height:1.5;
 
 }
+
+/*==========================
+         FOOTER
+===========================*/
 
 .footer{
 
@@ -340,7 +420,7 @@ button:disabled{
 }
 
 /*==========================
-      RESPONSIVE
+       RESPONSIVE
 ===========================*/
 
 @media(max-width:480px){
