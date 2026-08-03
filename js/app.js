@@ -4,9 +4,28 @@
 
 const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzr3jgLZLJKl1ecUOKbb_O9eHwd0SeGMy0_dGSxkvK7UgQzm5MwKV6uEeRRtFEUXSnU/exec";
 
+
+//======================================
+// CONFIGURACIÓN GEOLOCALIZACIÓN
+//======================================
+
+const UBICACION_PLANTA = {
+
+    lat:-33.49679,
+
+    lng:-70.76089
+
+};
+
+
+const RADIO_PERMITIDO = 500; // metros
+
+
+
 let html5QrCode = null;
 let scannerActivo = false;
 let trabajadorActual = null;
+
 
 
 //======================================
@@ -61,13 +80,14 @@ function iniciarScanner(){
     document.getElementById("reader").style.display="block";
 
 
-    html5QrCode = new Html5Qrcode("reader");
+    html5QrCode = new Html5QrCode("reader");
 
 
 
     html5QrCode.start(
 
         {facingMode:"environment"},
+
 
         {
 
@@ -327,9 +347,6 @@ function mostrarTrabajador(datos){
     "✅ Trabajador identificado.";
 
 }
-
-
-
 //======================================
 // NORMALIZAR RUT
 //======================================
@@ -400,13 +417,251 @@ function marcar(tipo){
 
     document.getElementById("resultado").innerHTML=
 
-    "⏳ Registrando "+tipo.toLowerCase()+"...";
+    "📍 Validando ubicación...";
 
 
 
     document.getElementById("btnEntrada").disabled=true;
 
     document.getElementById("btnSalida").disabled=true;
+
+
+
+    validarUbicacion()
+
+    .then(ubicacionPermitida=>{
+
+
+        if(!ubicacionPermitida){
+
+
+            document.getElementById("btnEntrada").disabled=false;
+
+            document.getElementById("btnSalida").disabled=false;
+
+
+            return;
+
+
+        }
+
+
+
+        enviarRegistro(datos);
+
+
+
+    });
+
+
+
+}
+
+
+
+
+//======================================
+// VALIDAR UBICACIÓN GPS
+//======================================
+
+function validarUbicacion(){
+
+
+    return new Promise((resolve)=>{
+
+
+        if(!navigator.geolocation){
+
+
+            document.getElementById("resultado").innerHTML=
+
+            "❌ Este dispositivo no permite ubicación.";
+
+
+            resolve(false);
+
+            return;
+
+        }
+
+
+
+        navigator.geolocation.getCurrentPosition(
+
+
+
+            posicion=>{
+
+
+                const latActual =
+                posicion.coords.latitude;
+
+
+                const lngActual =
+                posicion.coords.longitude;
+
+
+
+                const distancia = calcularDistancia(
+
+                    latActual,
+
+                    lngActual,
+
+                    UBICACION_PLANTA.lat,
+
+                    UBICACION_PLANTA.lng
+
+                );
+
+
+
+                console.log("LAT ACTUAL:",latActual);
+
+                console.log("LNG ACTUAL:",lngActual);
+
+                console.log("DISTANCIA PLANTA:",Math.round(distancia),"metros");
+
+
+
+                if(distancia <= RADIO_PERMITIDO){
+
+
+                    resolve(true);
+
+
+                }
+
+
+                else{
+
+
+                    document.getElementById("resultado").innerHTML=
+
+                    "❌ Fuera de zona autorizada.<br>" +
+
+                    "Distancia: " +
+
+                    Math.round(distancia) +
+
+                    " metros";
+
+
+                    resolve(false);
+
+
+                }
+
+
+            },
+
+
+
+            error=>{
+
+
+                console.log("ERROR GPS:",error);
+
+
+
+                document.getElementById("resultado").innerHTML=
+
+                "⚠️ Debe activar la ubicación para marcar asistencia.";
+
+
+
+                resolve(false);
+
+
+            },
+
+
+
+            {
+
+
+                enableHighAccuracy:true,
+
+                timeout:10000,
+
+                maximumAge:0
+
+            }
+
+
+        );
+
+
+    });
+
+
+}
+
+
+
+
+
+//======================================
+// CALCULAR DISTANCIA ENTRE COORDENADAS
+//======================================
+
+function calcularDistancia(lat1,lon1,lat2,lon2){
+
+
+    const R = 6371000;
+
+
+    const radLat1 = lat1 * Math.PI / 180;
+
+    const radLat2 = lat2 * Math.PI / 180;
+
+
+    const diferenciaLat =
+    (lat2-lat1) * Math.PI / 180;
+
+
+    const diferenciaLon =
+    (lon2-lon1) * Math.PI / 180;
+
+
+
+    const a =
+
+    Math.sin(diferenciaLat/2) *
+    Math.sin(diferenciaLat/2)
+
+    +
+
+    Math.cos(radLat1) *
+    Math.cos(radLat2) *
+
+    Math.sin(diferenciaLon/2) *
+    Math.sin(diferenciaLon/2);
+
+
+
+    const c =
+    2 * Math.atan2(
+        Math.sqrt(a),
+        Math.sqrt(1-a)
+    );
+
+
+
+    return R*c;
+
+
+}
+
+
+
+
+
+//======================================
+// ENVIAR REGISTRO A APPS SCRIPT
+//======================================
+
+function enviarRegistro(datos){
 
 
 
@@ -445,6 +700,7 @@ function marcar(tipo){
             document.getElementById("btnSalida").disabled=false;
 
 
+
             return;
 
 
@@ -454,15 +710,14 @@ function marcar(tipo){
 
         document.getElementById("resultado").innerHTML=
 
-        "✅ "+tipo+" registrada correctamente.<br>"+
+        "✅ Registro realizado correctamente.<br>"+
 
-        trabajadorActual.nombre+"<br>"+
-
-        ahora.toLocaleTimeString("es-CL");
+        trabajadorActual.nombre;
 
 
 
         limpiarPantalla();
+
 
 
     })
@@ -490,7 +745,9 @@ function marcar(tipo){
     });
 
 
+
 }
+
 
 
 
@@ -524,7 +781,9 @@ function detenerScanner(){
 
         .catch(error=>{
 
+
             console.log(error);
+
 
         });
 
@@ -533,6 +792,8 @@ function detenerScanner(){
 
 
 }
+
+
 
 
 
@@ -549,24 +810,30 @@ function limpiarPantalla(){
         trabajadorActual=null;
 
 
+
         document.getElementById("trabajador")
         .style.display="none";
+
 
 
         document.getElementById("btnEntrada")
         .disabled=true;
 
 
+
         document.getElementById("btnSalida")
         .disabled=true;
+
 
 
         document.getElementById("rutManual")
         .value="";
 
 
+
         document.getElementById("resultado")
         .innerHTML="";
+
 
 
     },5000);
