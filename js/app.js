@@ -19,11 +19,13 @@ window.onload = () => {
 
     setInterval(actualizarFechaHora,1000);
 
+
     document
         .getElementById("btnScan")
         .addEventListener("click", iniciarScanner);
 
 };
+
 
 
 //======================================
@@ -35,6 +37,7 @@ function actualizarFechaHora(){
     const ahora = new Date();
 
     document.getElementById("fechaHora").innerHTML =
+
         ahora.toLocaleDateString("es-CL") +
         "<br>" +
         ahora.toLocaleTimeString("es-CL");
@@ -42,15 +45,19 @@ function actualizarFechaHora(){
 }
 
 
+
 //======================================
-// LECTOR QR
+// INICIAR LECTOR QR
 //======================================
 
 function iniciarScanner(){
 
+
     if(scannerActivo) return;
 
+
     scannerActivo = true;
+
 
     document.getElementById("reader").style.display="block";
 
@@ -58,9 +65,11 @@ function iniciarScanner(){
     html5QrCode = new Html5Qrcode("reader");
 
 
+
     html5QrCode.start(
 
         { facingMode:"environment" },
+
 
         {
 
@@ -73,18 +82,27 @@ function iniciarScanner(){
 
         },
 
+
         onScanSuccess
 
 
-    ).catch(error=>{
+    )
+
+
+    .catch(error=>{
+
 
         console.log(error);
 
+
         scannerActivo=false;
+
 
         alert("No fue posible abrir la cámara.");
 
-    };
+
+    });
+
 
 }
 
@@ -105,26 +123,35 @@ function onScanSuccess(decodedText){
 
     try{
 
+
         const url = new URL(decodedText);
+
 
         identificador = url.searchParams.get("ID");
 
 
-    }catch{
+    }
+
+    catch{
+
 
         identificador = decodedText.trim();
 
     }
 
 
+
     if(!identificador){
 
-        document.getElementById("resultado").innerHTML=
-        "QR inválido.";
+
+        document.getElementById("resultado").innerHTML =
+        "⚠️ QR inválido.";
+
 
         return;
 
     }
+
 
 
     identificarTrabajador("ID",identificador);
@@ -141,22 +168,28 @@ function onScanSuccess(decodedText){
 function buscarPorRut(){
 
 
-    let rut=document
+    let rut = document
         .getElementById("rutManual")
         .value;
+
 
 
     rut = normalizarRut(rut);
 
 
+
     if(rut===""){
 
-        document.getElementById("resultado").innerHTML=
-        "Ingrese un RUT.";
+
+        document.getElementById("resultado").innerHTML =
+
+        "⚠️ Ingrese un RUT.";
+
 
         return;
 
     }
+
 
 
     identificarTrabajador("RUT",rut);
@@ -168,7 +201,6 @@ function buscarPorRut(){
 
 //======================================
 // IDENTIFICACIÓN CENTRAL
-// QR + RUT
 //======================================
 
 function identificarTrabajador(tipo,valor){
@@ -177,25 +209,32 @@ function identificarTrabajador(tipo,valor){
     let consulta="";
 
 
+
     if(tipo==="ID"){
 
-        consulta="?ID="+encodeURIComponent(valor);
+
+        consulta = "?ID=" + encodeURIComponent(valor);
+
 
     }
 
 
     if(tipo==="RUT"){
 
-        consulta="?RUT="+encodeURIComponent(valor);
+
+        consulta = "?RUT=" + encodeURIComponent(valor);
+
 
     }
 
 
 
-    fetch(URL_SCRIPT+consulta)
+    fetch(URL_SCRIPT + consulta)
 
 
-    .then(r=>r.json())
+
+    .then(respuesta=>respuesta.json())
+
 
 
     .then(datos=>{
@@ -204,13 +243,15 @@ function identificarTrabajador(tipo,valor){
         if(datos.error){
 
 
-            document.getElementById("resultado").innerHTML=
-            "⚠️ "+datos.error;
+            document.getElementById("resultado").innerHTML =
+
+            "⚠️ " + datos.error;
 
 
             return;
 
         }
+
 
 
         mostrarTrabajador(datos);
@@ -219,13 +260,15 @@ function identificarTrabajador(tipo,valor){
     })
 
 
+
     .catch(error=>{
 
 
         console.log(error);
 
 
-        document.getElementById("resultado").innerHTML=
+        document.getElementById("resultado").innerHTML =
+
         "❌ Error consultando trabajador.";
 
 
@@ -243,15 +286,19 @@ function identificarTrabajador(tipo,valor){
 function mostrarTrabajador(datos){
 
 
-    trabajadorActual=datos;
+    trabajadorActual = datos;
 
 
-    document.getElementById("nombreTrabajador").innerHTML=
+
+    document.getElementById("nombreTrabajador").innerHTML =
+
     datos.nombre;
 
 
-    document.getElementById("cargoTrabajador").innerHTML=
-    "RUT: "+datos.rut;
+
+    document.getElementById("cargoTrabajador").innerHTML =
+
+    "RUT: " + datos.rut;
 
 
 
@@ -264,12 +311,14 @@ function mostrarTrabajador(datos){
     .disabled=false;
 
 
+
     document.getElementById("btnSalida")
     .disabled=false;
 
 
 
-    document.getElementById("resultado").innerHTML=
+    document.getElementById("resultado").innerHTML =
+
     "✅ Trabajador identificado.";
 
 
@@ -285,10 +334,17 @@ function normalizarRut(rut){
 
 
     return rut
+
+        .toString()
+
         .replace(/\./g,"")
+
         .replace(/-/g,"")
+
         .replace(/\s/g,"")
+
         .toUpperCase();
+
 
 }
 
@@ -305,6 +361,7 @@ function marcar(tipo){
 
 
         document.getElementById("resultado").innerHTML =
+
         "⚠️ Primero identifique al trabajador.";
 
 
@@ -323,9 +380,12 @@ function marcar(tipo){
 
         nombre: trabajadorActual.nombre,
 
+
         tipo: tipo,
 
+
         fecha: ahora.toLocaleDateString("es-CL"),
+
 
         hora: ahora.toLocaleTimeString("es-CL")
 
@@ -334,19 +394,15 @@ function marcar(tipo){
 
 
 
-    // Confirmación inmediata al usuario
-
     document.getElementById("resultado").innerHTML =
 
     "⏳ Registrando " + tipo.toLowerCase() + "...";
 
 
 
-    // Desactivar botones mientras procesa
+    document.getElementById("btnEntrada").disabled=true;
 
-    document.getElementById("btnEntrada").disabled = true;
-
-    document.getElementById("btnSalida").disabled = true;
+    document.getElementById("btnSalida").disabled=true;
 
 
 
@@ -355,13 +411,16 @@ function marcar(tipo){
 
         method:"POST",
 
+
         body:JSON.stringify(datos)
 
 
     })
 
 
-    .then(r=>r.text())
+
+    .then(respuesta=>respuesta.text())
+
 
 
     .then(()=>{
@@ -381,7 +440,9 @@ function marcar(tipo){
         limpiarPantalla();
 
 
+
     })
+
 
 
     .catch(error=>{
@@ -394,59 +455,14 @@ function marcar(tipo){
         document.getElementById("resultado").innerHTML =
 
 
-        "❌ Error al registrar. Intente nuevamente.";
+        "❌ Error al registrar.";
 
 
-
-        // Reactivar botones si falla
 
         document.getElementById("btnEntrada").disabled=false;
 
         document.getElementById("btnSalida").disabled=false;
 
-
-    });
-
-
-};
-
-
-
-    fetch(URL_SCRIPT,{
-
-        method:"POST",
-
-        body:JSON.stringify(datos)
-
-    })
-
-
-    .then(r=>r.text())
-
-
-    .then(()=>{
-
-
-        document.getElementById("resultado").innerHTML=
-
-        "✅ "+tipo+" registrada correctamente.";
-
-
-        limpiarPantalla();
-
-
-    })
-
-
-    .catch(error=>{
-
-
-        console.log(error);
-
-
-        document.getElementById("resultado").innerHTML=
-
-        "❌ Error al registrar.";
 
 
     });
@@ -487,7 +503,9 @@ function detenerScanner(){
 
         .catch(error=>{
 
+
             console.log(error);
+
 
         });
 
@@ -500,7 +518,7 @@ function detenerScanner(){
 
 
 //======================================
-// LIMPIAR PARA SIGUIENTE TRABAJADOR
+// LIMPIAR PANTALLA
 //======================================
 
 function limpiarPantalla(){
@@ -510,6 +528,7 @@ function limpiarPantalla(){
 
 
         trabajadorActual=null;
+
 
 
         document.getElementById("trabajador")
@@ -537,7 +556,7 @@ function limpiarPantalla(){
 
 
 
-    },3000);
+    },5000);
 
 
 }
