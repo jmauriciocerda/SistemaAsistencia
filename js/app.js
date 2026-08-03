@@ -9,6 +9,12 @@ const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzr3jgLZLJKl1ecUOKbb
 // CONFIGURACIÓN GEOLOCALIZACIÓN
 //======================================
 
+// TRUE = pruebas fuera de planta
+// FALSE = funcionamiento real
+
+const MODO_PRUEBA = true;
+
+
 const UBICACION_PLANTA = {
 
     lat:-33.49679,
@@ -22,8 +28,10 @@ const RADIO_PERMITIDO = 500; // metros
 
 
 
-let Html5QrCode = null;
+let html5QrCode = null;
+
 let scannerActivo = false;
+
 let trabajadorActual = null;
 
 
@@ -55,6 +63,7 @@ function actualizarFechaHora(){
 
     const ahora = new Date();
 
+
     document.getElementById("fechaHora").innerHTML =
 
         ahora.toLocaleDateString("es-CL") +
@@ -71,6 +80,7 @@ function actualizarFechaHora(){
 
 function iniciarScanner(){
 
+
     if(scannerActivo) return;
 
 
@@ -80,11 +90,11 @@ function iniciarScanner(){
     document.getElementById("reader").style.display="block";
 
 
-    Html5Qrcode = new Html5Qrcode("reader");
+    html5QrCode = new Html5Qrcode("reader");
 
 
 
-    Html5Qrcode.start(
+    html5QrCode.start(
 
         {facingMode:"environment"},
 
@@ -109,16 +119,21 @@ function iniciarScanner(){
 
     .catch(error=>{
 
+
         console.log(error);
+
 
         scannerActivo=false;
 
+
         alert("No fue posible abrir la cámara.");
+
 
     });
 
 
 }
+
 
 
 
@@ -137,16 +152,21 @@ function onScanSuccess(decodedText){
 
     try{
 
+
         const url = new URL(decodedText);
+
 
         identificador=url.searchParams.get("ID");
 
 
     }
 
+
     catch{
 
+
         identificador=decodedText.trim();
+
 
     }
 
@@ -162,6 +182,7 @@ function onScanSuccess(decodedText){
 
         return;
 
+
     }
 
 
@@ -170,6 +191,7 @@ function onScanSuccess(decodedText){
 
 
 }
+
 
 
 
@@ -200,6 +222,7 @@ function buscarPorRut(){
 
         return;
 
+
     }
 
 
@@ -208,6 +231,8 @@ function buscarPorRut(){
 
 
 }
+
+
 
 
 
@@ -238,18 +263,6 @@ function identificarTrabajador(tipo,valor){
 
 
 
-    console.log("----------------------------");
-
-    console.log("TIPO CONSULTA:", tipo);
-
-    console.log("VALOR ENVIADO:", valor);
-
-    console.log("URL CONSULTADA:", URL_SCRIPT+consulta);
-
-    console.log("----------------------------");
-
-
-
     fetch(URL_SCRIPT+consulta)
 
 
@@ -257,11 +270,192 @@ function identificarTrabajador(tipo,valor){
     .then(respuesta=>respuesta.json())
 
 
+    .then(datos=>{
+
+
+        console.log("RESPUESTA:",datos);
+
+
+
+        if(datos.error){
+
+
+            document.getElementById("resultado").innerHTML=
+
+            "⚠️ "+datos.error;
+
+
+            return;
+
+
+        }
+
+
+
+        mostrarTrabajador(datos);
+
+
+    })
+
+
+
+    .catch(error=>{
+
+
+        console.log(error);
+
+
+        document.getElementById("resultado").innerHTML=
+
+        "❌ Error consultando trabajador.";
+
+
+    });
+
+
+}
+
+
+
+
+
+//======================================
+// MOSTRAR TRABAJADOR
+//======================================
+
+function mostrarTrabajador(datos){
+
+
+    trabajadorActual=datos;
+
+
+
+    document.getElementById("nombreTrabajador").innerHTML=
+
+    datos.nombre;
+
+
+
+    document.getElementById("cargoTrabajador").innerHTML=
+
+    "RUT: "+datos.rut;
+
+
+
+    document.getElementById("trabajador")
+    .style.display="block";
+
+
+
+    document.getElementById("btnEntrada")
+    .disabled=false;
+
+
+
+    document.getElementById("btnSalida")
+    .disabled=false;
+
+
+
+    document.getElementById("resultado").innerHTML=
+
+    "✅ Trabajador identificado.";
+
+
+}
+
+
+
+
+
+//======================================
+// NORMALIZAR RUT
+//======================================
+
+function normalizarRut(rut){
+
+
+    return rut
+
+        .toString()
+
+        .replace(/\./g,"")
+
+        .replace(/-/g,"")
+
+        .replace(/\s/g,"")
+
+        .toUpperCase();
+
+
+}
+//======================================
+// BUSCAR POR RUT
+//======================================
+
+function buscarPorRut(){
+
+    let rut=document
+        .getElementById("rutManual")
+        .value;
+
+
+    rut=normalizarRut(rut);
+
+
+    if(rut===""){
+
+        document.getElementById("resultado").innerHTML =
+        "⚠️ Ingrese un RUT.";
+
+        return;
+
+    }
+
+
+    identificarTrabajador("RUT",rut);
+
+}
+
+
+
+//======================================
+// IDENTIFICACIÓN CENTRAL
+//======================================
+
+function identificarTrabajador(tipo,valor){
+
+    let consulta="";
+
+
+    if(tipo==="ID"){
+
+        consulta="?ID="+encodeURIComponent(valor);
+
+    }
+
+
+    if(tipo==="RUT"){
+
+        consulta="?RUT="+encodeURIComponent(valor);
+
+    }
+
+
+    console.log("Consulta:",URL_SCRIPT+consulta);
+
+
+
+    fetch(URL_SCRIPT+consulta)
+
+
+    .then(respuesta=>respuesta.json())
+
 
     .then(datos=>{
 
 
-        console.log("RESPUESTA APPS SCRIPT:",datos);
+        console.log("Respuesta:",datos);
 
 
 
@@ -283,7 +477,6 @@ function identificarTrabajador(tipo,valor){
 
 
     })
-
 
 
     .catch(error=>{
@@ -336,7 +529,6 @@ function mostrarTrabajador(datos){
     .disabled=false;
 
 
-
     document.getElementById("btnSalida")
     .disabled=false;
 
@@ -347,12 +539,14 @@ function mostrarTrabajador(datos){
     "✅ Trabajador identificado.";
 
 }
+
+
+
 //======================================
 // NORMALIZAR RUT
 //======================================
 
 function normalizarRut(rut){
-
 
     return rut
 
@@ -365,7 +559,6 @@ function normalizarRut(rut){
         .replace(/\s/g,"")
 
         .toUpperCase();
-
 
 }
 
@@ -401,12 +594,9 @@ function marcar(tipo){
 
         nombre:trabajadorActual.nombre,
 
-
         tipo:tipo,
 
-
         fecha:ahora.toLocaleDateString("es-CL"),
-
 
         hora:ahora.toLocaleTimeString("es-CL")
 
@@ -429,10 +619,10 @@ function marcar(tipo){
 
     validarUbicacion()
 
-    .then(ubicacionPermitida=>{
+    .then(permitido=>{
 
 
-        if(!ubicacionPermitida){
+        if(!permitido){
 
 
             document.getElementById("btnEntrada").disabled=false;
@@ -441,7 +631,6 @@ function marcar(tipo){
 
 
             return;
-
 
         }
 
@@ -454,9 +643,7 @@ function marcar(tipo){
     });
 
 
-
 }
-
 
 
 
@@ -475,7 +662,7 @@ function validarUbicacion(){
 
             document.getElementById("resultado").innerHTML=
 
-            "❌ Este dispositivo no permite ubicación.";
+            "❌ Ubicación no disponible.";
 
 
             resolve(false);
@@ -493,20 +680,11 @@ function validarUbicacion(){
             posicion=>{
 
 
-                const latActual =
-                posicion.coords.latitude;
+                const distancia=calcularDistancia(
 
+                    posicion.coords.latitude,
 
-                const lngActual =
-                posicion.coords.longitude;
-
-
-
-                const distancia = calcularDistancia(
-
-                    latActual,
-
-                    lngActual,
+                    posicion.coords.longitude,
 
                     UBICACION_PLANTA.lat,
 
@@ -516,15 +694,19 @@ function validarUbicacion(){
 
 
 
-                console.log("LAT ACTUAL:",latActual);
+                console.log(
 
-                console.log("LNG ACTUAL:",lngActual);
+                "Distancia planta:",
 
-                console.log("DISTANCIA PLANTA:",Math.round(distancia),"metros");
+                Math.round(distancia),
+
+                "metros"
+
+                );
 
 
 
-                if(distancia <= RADIO_PERMITIDO){
+                if(distancia<=RADIO_PERMITIDO){
 
 
                     resolve(true);
@@ -532,23 +714,21 @@ function validarUbicacion(){
 
                 }
 
-
                 else{
 
 
                     document.getElementById("resultado").innerHTML=
 
-                    "❌ Fuera de zona autorizada.<br>" +
+                    "❌ Fuera de zona autorizada.<br>"+
 
-                    "Distancia: " +
+                    "Distancia: "+
 
-                    Math.round(distancia) +
+                    Math.round(distancia)+
 
                     " metros";
 
 
                     resolve(false);
-
 
                 }
 
@@ -560,14 +740,12 @@ function validarUbicacion(){
             error=>{
 
 
-                console.log("ERROR GPS:",error);
-
+                console.log(error);
 
 
                 document.getElementById("resultado").innerHTML=
 
-                "⚠️ Debe activar la ubicación para marcar asistencia.";
-
+                "⚠️ Active la ubicación para marcar asistencia.";
 
 
                 resolve(false);
@@ -576,9 +754,7 @@ function validarUbicacion(){
             },
 
 
-
             {
-
 
                 enableHighAccuracy:true,
 
@@ -599,70 +775,51 @@ function validarUbicacion(){
 
 
 
-
-
 //======================================
-// CALCULAR DISTANCIA ENTRE COORDENADAS
+// CALCULAR DISTANCIA
 //======================================
 
 function calcularDistancia(lat1,lon1,lat2,lon2){
 
 
-    const R = 6371000;
+    const R=6371000;
 
 
-    const radLat1 = lat1 * Math.PI / 180;
+    const dLat=(lat2-lat1)*Math.PI/180;
 
-    const radLat2 = lat2 * Math.PI / 180;
-
-
-    const diferenciaLat =
-    (lat2-lat1) * Math.PI / 180;
+    const dLon=(lon2-lon1)*Math.PI/180;
 
 
-    const diferenciaLon =
-    (lon2-lon1) * Math.PI / 180;
+    const a=
 
-
-
-    const a =
-
-    Math.sin(diferenciaLat/2) *
-    Math.sin(diferenciaLat/2)
+    Math.sin(dLat/2)*Math.sin(dLat/2)
 
     +
 
-    Math.cos(radLat1) *
-    Math.cos(radLat2) *
+    Math.cos(lat1*Math.PI/180)
 
-    Math.sin(diferenciaLon/2) *
-    Math.sin(diferenciaLon/2);
+    *
 
+    Math.cos(lat2*Math.PI/180)
 
+    *
 
-    const c =
-    2 * Math.atan2(
-        Math.sqrt(a),
-        Math.sqrt(1-a)
-    );
+    Math.sin(dLon/2)*Math.sin(dLon/2);
 
 
 
-    return R*c;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 
 
 }
 
 
 
-
-
 //======================================
-// ENVIAR REGISTRO A APPS SCRIPT
+// ENVIAR REGISTRO
 //======================================
 
 function enviarRegistro(datos){
-
 
 
     fetch(URL_SCRIPT,{
@@ -674,15 +831,13 @@ function enviarRegistro(datos){
     })
 
 
-
     .then(respuesta=>respuesta.json())
-
 
 
     .then(resultado=>{
 
 
-        console.log("RESPUESTA REGISTRO:",resultado);
+        console.log(resultado);
 
 
 
@@ -694,15 +849,12 @@ function enviarRegistro(datos){
             "⚠️ "+resultado.mensaje;
 
 
-
             document.getElementById("btnEntrada").disabled=false;
 
             document.getElementById("btnSalida").disabled=false;
 
 
-
             return;
-
 
         }
 
@@ -723,18 +875,15 @@ function enviarRegistro(datos){
     })
 
 
-
     .catch(error=>{
 
 
         console.log(error);
 
 
-
         document.getElementById("resultado").innerHTML=
 
         "❌ Error al registrar.";
-
 
 
         document.getElementById("btnEntrada").disabled=false;
@@ -745,9 +894,7 @@ function enviarRegistro(datos){
     });
 
 
-
 }
-
 
 
 
@@ -758,15 +905,16 @@ function enviarRegistro(datos){
 function detenerScanner(){
 
 
-    if(Html5Qrcode){
+    if(lectorQR){
 
 
-        Html5Qrcode.stop()
+        lectorQR.stop()
+
 
         .then(()=>{
 
 
-            Html5Qrcode.clear();
+            lectorQR.clear();
 
 
             scannerActivo=false;
@@ -795,8 +943,6 @@ function detenerScanner(){
 
 
 
-
-
 //======================================
 // LIMPIAR PANTALLA
 //======================================
@@ -808,7 +954,6 @@ function limpiarPantalla(){
 
 
         trabajadorActual=null;
-
 
 
         document.getElementById("trabajador")
