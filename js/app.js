@@ -43,7 +43,7 @@ function actualizarFechaHora(){
 
 
 //======================================
-// ABRIR CÁMARA
+// LECTOR QR
 //======================================
 
 function iniciarScanner(){
@@ -54,7 +54,9 @@ function iniciarScanner(){
 
     document.getElementById("reader").style.display="block";
 
+
     html5QrCode = new Html5Qrcode("reader");
+
 
     html5QrCode.start(
 
@@ -73,6 +75,7 @@ function iniciarScanner(){
 
         onScanSuccess
 
+
     ).catch(error=>{
 
         console.log(error);
@@ -88,112 +91,235 @@ function iniciarScanner(){
 
 
 //======================================
-// QR LEÍDO
+// QR DETECTADO
 //======================================
 
 function onScanSuccess(decodedText){
 
+
     detenerScanner();
 
-    let id = "";
+
+    let identificador="";
+
 
     try{
 
         const url = new URL(decodedText);
 
-        id = url.searchParams.get("ID");
+        identificador = url.searchParams.get("ID");
+
 
     }catch{
 
-        id = decodedText.trim();
+        identificador = decodedText.trim();
 
     }
 
-    if(id==""){
 
-        document.getElementById("resultado").innerHTML =
+    if(!identificador){
+
+        document.getElementById("resultado").innerHTML=
         "QR inválido.";
 
         return;
 
     }
 
-    buscarTrabajador(id);
+
+    identificarTrabajador("ID",identificador);
+
 
 }
 
 
 
 //======================================
-// CONSULTAR TRABAJADOR
+// BUSCAR POR RUT
 //======================================
 
-function buscarTrabajador(id){
+function buscarPorRut(){
 
-    fetch(URL_SCRIPT+"?ID="+encodeURIComponent(id))
 
-    .then(r=>r.json())
+    let rut=document
+        .getElementById("rutManual")
+        .value;
 
-    .then(datos=>{
 
-        if(datos.error){
+    rut = normalizarRut(rut);
 
-            document.getElementById("resultado").innerHTML=
-            datos.error;
 
-            return;
-
-        }
-
-        trabajadorActual=datos;
-
-        document.getElementById("nombreTrabajador").innerHTML=
-        datos.nombre;
-
-        document.getElementById("cargoTrabajador").innerHTML=
-        datos.rut;
-
-        document.getElementById("trabajador").style.display="block";
-
-        document.getElementById("btnEntrada").disabled=false;
-
-        document.getElementById("btnSalida").disabled=false;
+    if(rut===""){
 
         document.getElementById("resultado").innerHTML=
-        "Trabajador identificado.";
-
-    })
-
-    .catch(error=>{
-
-        console.log(error);
-
-        document.getElementById("resultado").innerHTML=
-        "Error consultando trabajador.";
-
-    });
-
-}
-
-
-
-//======================================
-// REGISTRAR
-//======================================
-
-function marcar(tipo){
-
-    if(trabajadorActual==null){
-
-        alert("Primero escanee una credencial.");
+        "Ingrese un RUT.";
 
         return;
 
     }
 
+
+    identificarTrabajador("RUT",rut);
+
+
+}
+
+
+
+//======================================
+// IDENTIFICACIÓN CENTRAL
+// QR + RUT
+//======================================
+
+function identificarTrabajador(tipo,valor){
+
+
+    let consulta="";
+
+
+    if(tipo==="ID"){
+
+        consulta="?ID="+encodeURIComponent(valor);
+
+    }
+
+
+    if(tipo==="RUT"){
+
+        consulta="?RUT="+encodeURIComponent(valor);
+
+    }
+
+
+
+    fetch(URL_SCRIPT+consulta)
+
+
+    .then(r=>r.json())
+
+
+    .then(datos=>{
+
+
+        if(datos.error){
+
+
+            document.getElementById("resultado").innerHTML=
+            "⚠️ "+datos.error;
+
+
+            return;
+
+        }
+
+
+        mostrarTrabajador(datos);
+
+
+    })
+
+
+    .catch(error=>{
+
+
+        console.log(error);
+
+
+        document.getElementById("resultado").innerHTML=
+        "❌ Error consultando trabajador.";
+
+
+    });
+
+
+}
+
+
+
+//======================================
+// MOSTRAR TRABAJADOR
+//======================================
+
+function mostrarTrabajador(datos){
+
+
+    trabajadorActual=datos;
+
+
+    document.getElementById("nombreTrabajador").innerHTML=
+    datos.nombre;
+
+
+    document.getElementById("cargoTrabajador").innerHTML=
+    "RUT: "+datos.rut;
+
+
+
+    document.getElementById("trabajador")
+    .style.display="block";
+
+
+
+    document.getElementById("btnEntrada")
+    .disabled=false;
+
+
+    document.getElementById("btnSalida")
+    .disabled=false;
+
+
+
+    document.getElementById("resultado").innerHTML=
+    "✅ Trabajador identificado.";
+
+
+}
+
+
+
+//======================================
+// NORMALIZAR RUT
+//======================================
+
+function normalizarRut(rut){
+
+
+    return rut
+        .replace(/\./g,"")
+        .replace(/-/g,"")
+        .replace(/\s/g,"")
+        .toUpperCase();
+
+}
+
+
+
+//======================================
+// REGISTRAR ENTRADA / SALIDA
+//======================================
+
+function marcar(tipo){
+
+
+    if(trabajadorActual==null){
+
+
+        document.getElementById("resultado").innerHTML=
+        "Primero identifique al trabajador.";
+
+
+        return;
+
+    }
+
+
+
     const ahora=new Date();
 
+
+
     const datos={
+
 
         nombre:trabajadorActual.nombre,
 
@@ -203,7 +329,10 @@ function marcar(tipo){
 
         hora:ahora.toLocaleTimeString("es-CL")
 
+
     };
+
+
 
     fetch(URL_SCRIPT,{
 
@@ -213,25 +342,37 @@ function marcar(tipo){
 
     })
 
+
     .then(r=>r.text())
+
 
     .then(()=>{
 
+
         document.getElementById("resultado").innerHTML=
+
         "✅ "+tipo+" registrada correctamente.";
+
 
         limpiarPantalla();
 
+
     })
+
 
     .catch(error=>{
 
+
         console.log(error);
 
+
         document.getElementById("resultado").innerHTML=
-        "Error al registrar.";
+
+        "❌ Error al registrar.";
+
 
     });
+
 
 }
 
@@ -243,46 +384,82 @@ function marcar(tipo){
 
 function detenerScanner(){
 
+
     if(html5QrCode){
+
 
         html5QrCode.stop()
 
+
         .then(()=>{
+
 
             html5QrCode.clear();
 
+
             scannerActivo=false;
 
-            document.getElementById("reader").style.display="none";
+
+            document.getElementById("reader")
+            .style.display="none";
+
 
         })
 
-        .catch(console.error);
+
+        .catch(error=>{
+
+            console.log(error);
+
+        });
+
 
     }
+
 
 }
 
 
 
 //======================================
-// REINICIAR
+// LIMPIAR PARA SIGUIENTE TRABAJADOR
 //======================================
 
 function limpiarPantalla(){
 
+
     setTimeout(()=>{
+
 
         trabajadorActual=null;
 
-        document.getElementById("trabajador").style.display="none";
 
-        document.getElementById("btnEntrada").disabled=true;
+        document.getElementById("trabajador")
+        .style.display="none";
 
-        document.getElementById("btnSalida").disabled=true;
 
-        document.getElementById("resultado").innerHTML="";
+
+        document.getElementById("btnEntrada")
+        .disabled=true;
+
+
+
+        document.getElementById("btnSalida")
+        .disabled=true;
+
+
+
+        document.getElementById("rutManual")
+        .value="";
+
+
+
+        document.getElementById("resultado")
+        .innerHTML="";
+
+
 
     },3000);
+
 
 }
