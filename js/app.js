@@ -52,11 +52,10 @@ function actualizarFechaHora(){
 
 function iniciarScanner(){
 
-
     if(scannerActivo) return;
 
 
-    scannerActivo = true;
+    scannerActivo=true;
 
 
     document.getElementById("reader").style.display="block";
@@ -68,7 +67,7 @@ function iniciarScanner(){
 
     html5QrCode.start(
 
-        { facingMode:"environment" },
+        {facingMode:"environment"},
 
 
         {
@@ -91,15 +90,11 @@ function iniciarScanner(){
 
     .catch(error=>{
 
-
         console.log(error);
-
 
         scannerActivo=false;
 
-
         alert("No fue posible abrir la cámara.");
-
 
     });
 
@@ -123,19 +118,17 @@ function onScanSuccess(decodedText){
 
     try{
 
-
         const url = new URL(decodedText);
 
-
-        identificador = url.searchParams.get("ID");
+        identificador=url.searchParams.get("ID");
 
 
     }
 
+
     catch{
 
-
-        identificador = decodedText.trim();
+        identificador=decodedText.trim();
 
     }
 
@@ -144,7 +137,8 @@ function onScanSuccess(decodedText){
     if(!identificador){
 
 
-        document.getElementById("resultado").innerHTML =
+        document.getElementById("resultado").innerHTML=
+
         "⚠️ QR inválido.";
 
 
@@ -168,20 +162,20 @@ function onScanSuccess(decodedText){
 function buscarPorRut(){
 
 
-    let rut = document
+    let rut=document
         .getElementById("rutManual")
         .value;
 
 
 
-    rut = normalizarRut(rut);
+    rut=normalizarRut(rut);
 
 
 
     if(rut===""){
 
 
-        document.getElementById("resultado").innerHTML =
+        document.getElementById("resultado").innerHTML=
 
         "⚠️ Ingrese un RUT.";
 
@@ -213,23 +207,40 @@ function identificarTrabajador(tipo,valor){
     if(tipo==="ID"){
 
 
-        consulta = "?ID=" + encodeURIComponent(valor);
+        consulta="?ID="+encodeURIComponent(valor);
 
 
     }
+
 
 
     if(tipo==="RUT"){
 
 
-        consulta = "?RUT=" + encodeURIComponent(valor);
+        consulta="?RUT="+encodeURIComponent(valor);
 
 
     }
 
 
 
-    fetch(URL_SCRIPT + consulta)
+    // =================================
+    // PRUEBA DEBUG
+    // =================================
+
+    console.log("----------------------------");
+
+    console.log("TIPO CONSULTA:", tipo);
+
+    console.log("VALOR ENVIADO:", valor);
+
+    console.log("URL CONSULTADA:", URL_SCRIPT + consulta);
+
+    console.log("----------------------------");
+
+
+
+    fetch(URL_SCRIPT+consulta)
 
 
 
@@ -240,12 +251,16 @@ function identificarTrabajador(tipo,valor){
     .then(datos=>{
 
 
+        console.log("RESPUESTA APPS SCRIPT:",datos);
+
+
+
         if(datos.error){
 
 
-            document.getElementById("resultado").innerHTML =
+            document.getElementById("resultado").innerHTML=
 
-            "⚠️ " + datos.error;
+            "⚠️ "+datos.error;
 
 
             return;
@@ -267,7 +282,7 @@ function identificarTrabajador(tipo,valor){
         console.log(error);
 
 
-        document.getElementById("resultado").innerHTML =
+        document.getElementById("resultado").innerHTML=
 
         "❌ Error consultando trabajador.";
 
@@ -286,19 +301,19 @@ function identificarTrabajador(tipo,valor){
 function mostrarTrabajador(datos){
 
 
-    trabajadorActual = datos;
+    trabajadorActual=datos;
 
 
 
-    document.getElementById("nombreTrabajador").innerHTML =
+    document.getElementById("nombreTrabajador").innerHTML=
 
     datos.nombre;
 
 
 
-    document.getElementById("cargoTrabajador").innerHTML =
+    document.getElementById("cargoTrabajador").innerHTML=
 
-    "RUT: " + datos.rut;
+    "RUT: "+datos.rut;
 
 
 
@@ -317,10 +332,9 @@ function mostrarTrabajador(datos){
 
 
 
-    document.getElementById("resultado").innerHTML =
+    document.getElementById("resultado").innerHTML=
 
     "✅ Trabajador identificado.";
-
 
 }
 
@@ -360,7 +374,7 @@ function marcar(tipo){
     if(trabajadorActual==null){
 
 
-        document.getElementById("resultado").innerHTML =
+        document.getElementById("resultado").innerHTML=
 
         "⚠️ Primero identifique al trabajador.";
 
@@ -371,32 +385,32 @@ function marcar(tipo){
 
 
 
-    const ahora = new Date();
+    const ahora=new Date();
 
 
 
-    const datos = {
+    const datos={
 
 
-        nombre: trabajadorActual.nombre,
+        nombre:trabajadorActual.nombre,
 
 
-        tipo: tipo,
+        tipo:tipo,
 
 
-        fecha: ahora.toLocaleDateString("es-CL"),
+        fecha:ahora.toLocaleDateString("es-CL"),
 
 
-        hora: ahora.toLocaleTimeString("es-CL")
+        hora:ahora.toLocaleTimeString("es-CL")
 
 
     };
 
 
 
-    document.getElementById("resultado").innerHTML =
+    document.getElementById("resultado").innerHTML=
 
-    "⏳ Registrando " + tipo.toLowerCase() + "...";
+    "⏳ Registrando "+tipo.toLowerCase()+"...";
 
 
 
@@ -408,12 +422,9 @@ function marcar(tipo){
 
     fetch(URL_SCRIPT,{
 
-
         method:"POST",
 
-
         body:JSON.stringify(datos)
-
 
     })
 
@@ -426,19 +437,17 @@ function marcar(tipo){
     .then(()=>{
 
 
-        document.getElementById("resultado").innerHTML =
+        document.getElementById("resultado").innerHTML=
 
+        "✅ "+tipo+" registrada correctamente.<br>"+
 
-        "✅ " + tipo + " registrada correctamente.<br>" +
-
-        trabajadorActual.nombre + "<br>" +
+        trabajadorActual.nombre+"<br>"+
 
         ahora.toLocaleTimeString("es-CL");
 
 
 
         limpiarPantalla();
-
 
 
     })
@@ -452,8 +461,7 @@ function marcar(tipo){
 
 
 
-        document.getElementById("resultado").innerHTML =
-
+        document.getElementById("resultado").innerHTML=
 
         "❌ Error al registrar.";
 
@@ -462,7 +470,6 @@ function marcar(tipo){
         document.getElementById("btnEntrada").disabled=false;
 
         document.getElementById("btnSalida").disabled=false;
-
 
 
     });
@@ -484,7 +491,6 @@ function detenerScanner(){
 
         html5QrCode.stop()
 
-
         .then(()=>{
 
 
@@ -503,9 +509,7 @@ function detenerScanner(){
 
         .catch(error=>{
 
-
             console.log(error);
-
 
         });
 
@@ -530,30 +534,24 @@ function limpiarPantalla(){
         trabajadorActual=null;
 
 
-
         document.getElementById("trabajador")
         .style.display="none";
-
 
 
         document.getElementById("btnEntrada")
         .disabled=true;
 
 
-
         document.getElementById("btnSalida")
         .disabled=true;
-
 
 
         document.getElementById("rutManual")
         .value="";
 
 
-
         document.getElementById("resultado")
         .innerHTML="";
-
 
 
     },5000);
