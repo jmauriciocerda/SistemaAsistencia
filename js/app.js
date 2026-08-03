@@ -304,8 +304,8 @@ function marcar(tipo){
     if(trabajadorActual==null){
 
 
-        document.getElementById("resultado").innerHTML=
-        "Primero identifique al trabajador.";
+        document.getElementById("resultado").innerHTML =
+        "⚠️ Primero identifique al trabajador.";
 
 
         return;
@@ -314,23 +314,101 @@ function marcar(tipo){
 
 
 
-    const ahora=new Date();
+    const ahora = new Date();
 
 
 
-    const datos={
+    const datos = {
 
 
-        nombre:trabajadorActual.nombre,
+        nombre: trabajadorActual.nombre,
 
-        tipo:tipo,
+        tipo: tipo,
 
-        fecha:ahora.toLocaleDateString("es-CL"),
+        fecha: ahora.toLocaleDateString("es-CL"),
 
-        hora:ahora.toLocaleTimeString("es-CL")
+        hora: ahora.toLocaleTimeString("es-CL")
 
 
     };
+
+
+
+    // Confirmación inmediata al usuario
+
+    document.getElementById("resultado").innerHTML =
+
+    "⏳ Registrando " + tipo.toLowerCase() + "...";
+
+
+
+    // Desactivar botones mientras procesa
+
+    document.getElementById("btnEntrada").disabled = true;
+
+    document.getElementById("btnSalida").disabled = true;
+
+
+
+    fetch(URL_SCRIPT,{
+
+
+        method:"POST",
+
+        body:JSON.stringify(datos)
+
+
+    })
+
+
+    .then(r=>r.text())
+
+
+    .then(()=>{
+
+
+        document.getElementById("resultado").innerHTML =
+
+
+        "✅ " + tipo + " registrada correctamente.<br>" +
+
+        trabajadorActual.nombre + "<br>" +
+
+        ahora.toLocaleTimeString("es-CL");
+
+
+
+        limpiarPantalla();
+
+
+    })
+
+
+    .catch(error=>{
+
+
+        console.log(error);
+
+
+
+        document.getElementById("resultado").innerHTML =
+
+
+        "❌ Error al registrar. Intente nuevamente.";
+
+
+
+        // Reactivar botones si falla
+
+        document.getElementById("btnEntrada").disabled=false;
+
+        document.getElementById("btnSalida").disabled=false;
+
+
+    });
+
+
+};
 
 
 
