@@ -1,243 +1,288 @@
+//======================================
+// CONFIGURACIÓN
+//======================================
+
 const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbx-Zj0MiqtbN-h7JB0XIEmyk1LvQtIJM1zol5iqSdJT7NB_IJ2m3_4bc80CCE-HhoZ_/exec";
 
+let html5QrCode = null;
+let scannerActivo = false;
+let trabajadorActual = null;
 
-let trabajadorActual = "";
 
+//======================================
+// INICIO
+//======================================
 
-// Al cargar la página
-window.onload = function(){
+window.onload = () => {
 
-    cargarTrabajador();
+    actualizarFechaHora();
+
+    setInterval(actualizarFechaHora,1000);
+
+    document
+        .getElementById("btnScan")
+        .addEventListener("click", iniciarScanner);
 
 };
 
 
+//======================================
+// FECHA Y HORA
+//======================================
 
-// =====================================
-// CARGAR TRABAJADOR DESDE QR
-// =====================================
+function actualizarFechaHora(){
 
-function cargarTrabajador(){
+    const ahora = new Date();
 
+    document.getElementById("fechaHora").innerHTML =
+        ahora.toLocaleDateString("es-CL") +
+        "<br>" +
+        ahora.toLocaleTimeString("es-CL");
 
-    const parametros = new URLSearchParams(window.location.search);
+}
 
-    const id = parametros.get("ID");
 
+//======================================
+// ABRIR CÁMARA
+//======================================
 
-    console.log("URL completa:", window.location.href);
+function iniciarScanner(){
 
-    console.log("ID detectado:", id);
+    if(scannerActivo) return;
 
+    scannerActivo = true;
 
+    document.getElementById("reader").style.display="block";
 
-    // Si no viene QR, funciona modo manual
+    html5QrCode = new Html5Qrcode("reader");
 
-    if(!id){
+    html5QrCode.start(
 
-        return;
+        { facingMode:"environment" },
 
-    }
+        {
 
+            fps:10,
 
+            qrbox:{
+                width:220,
+                height:220
+            }
 
-    console.log("Consultando trabajador...");
+        },
 
+        onScanSuccess
 
+    ).catch(error=>{
 
-    fetch(URL_SCRIPT + "?ID=" + id)
+        console.log(error);
 
+        scannerActivo=false;
 
-    .then(respuesta => {
-
-
-        console.log("Estado respuesta:", respuesta.status);
-
-        return respuesta.json();
-
-
-    })
-
-
-    .then(datos => {
-
-
-        console.log("Respuesta Apps Script:", datos);
-
-
-
-        if(datos.error){
-
-
-            document.getElementById("resultado").innerHTML =
-
-            "⚠️ Trabajador no encontrado";
-
-
-            return;
-
-
-        }
-
-
-
-        trabajadorActual = datos.nombre;
-
-
-
-        document.getElementById("nombre").value = datos.nombre;
-
-
-
-        document.getElementById("nombre").disabled = true;
-
-
-
-        document.getElementById("resultado").innerHTML =
-
-        "✅ Trabajador identificado<br>" +
-
-        datos.nombre;
-
-
-
-    })
-
-
-    .catch(error => {
-
-
-        console.log("ERROR CONSULTA:", error);
-
-
-
-        document.getElementById("resultado").innerHTML =
-
-        "❌ Error cargando trabajador";
-
+        alert("No fue posible abrir la cámara.");
 
     });
-
 
 }
 
 
 
+//======================================
+// QR LEÍDO
+//======================================
 
-// =====================================
-// REGISTRAR ENTRADA / SALIDA
-// =====================================
+function onScanSuccess(decodedText){
 
-function marcar(tipo){
+    detenerScanner();
 
+    let id = "";
 
+    try{
 
-    let nombre = trabajadorActual;
+        const url = new URL(decodedText);
 
+        id = url.searchParams.get("ID");
 
+    }catch{
 
-    // Si no viene desde QR, permite escribir manual
-
-    if(nombre === ""){
-
-
-        nombre = document.getElementById("nombre").value;
-
+        id = decodedText.trim();
 
     }
 
-
-
-    if(nombre.trim() === ""){
-
+    if(id==""){
 
         document.getElementById("resultado").innerHTML =
-
-        "⚠️ Ingrese el nombre del trabajador";
-
+        "QR inválido.";
 
         return;
 
+    }
+
+    buscarTrabajador(id);
+
+}
+
+
+
+//======================================
+// CONSULTAR TRABAJADOR
+//======================================
+
+function buscarTrabajador(id){
+
+    fetch(URL_SCRIPT+"?ID="+encodeURIComponent(id))
+
+    .then(r=>r.json())
+
+    .then(datos=>{
+
+        if(datos.error){
+
+            document.getElementById("resultado").innerHTML=
+            datos.error;
+
+            return;
+
+        }
+
+        trabajadorActual=datos;
+
+        document.getElementById("nombreTrabajador").innerHTML=
+        datos.nombre;
+
+        document.getElementById("cargoTrabajador").innerHTML=
+        datos.rut;
+
+        document.getElementById("trabajador").style.display="block";
+
+        document.getElementById("btnEntrada").disabled=false;
+
+        document.getElementById("btnSalida").disabled=false;
+
+        document.getElementById("resultado").innerHTML=
+        "Trabajador identificado.";
+
+    })
+
+    .catch(error=>{
+
+        console.log(error);
+
+        document.getElementById("resultado").innerHTML=
+        "Error consultando trabajador.";
+
+    });
+
+}
+
+
+
+//======================================
+// REGISTRAR
+//======================================
+
+function marcar(tipo){
+
+    if(trabajadorActual==null){
+
+        alert("Primero escanee una credencial.");
+
+        return;
 
     }
 
+    const ahora=new Date();
 
+    const datos={
 
-    let fecha = new Date();
+        nombre:trabajadorActual.nombre,
 
+        tipo:tipo,
 
+        fecha:ahora.toLocaleDateString("es-CL"),
 
-    let datos = {
-
-
-        nombre: nombre,
-
-        tipo: tipo,
-
-        fecha: fecha.toLocaleDateString(),
-
-        hora: fecha.toLocaleTimeString()
-
+        hora:ahora.toLocaleTimeString("es-CL")
 
     };
 
-
-
-    console.log("Enviando registro:", datos);
-
-
-
-    fetch(URL_SCRIPT, {
-
+    fetch(URL_SCRIPT,{
 
         method:"POST",
 
         body:JSON.stringify(datos)
 
+    })
+
+    .then(r=>r.text())
+
+    .then(()=>{
+
+        document.getElementById("resultado").innerHTML=
+        "✅ "+tipo+" registrada correctamente.";
+
+        limpiarPantalla();
 
     })
 
+    .catch(error=>{
 
-    .then(respuesta => respuesta.text())
+        console.log(error);
 
-
-    .then(resultado => {
-
-
-
-        console.log("Respuesta registro:", resultado);
-
-
-
-        document.getElementById("resultado").innerHTML =
-
-
-        "✅ Registro realizado<br>" +
-
-        nombre + "<br>" +
-
-        tipo + "<br>" +
-
-        fecha.toLocaleTimeString();
-
-
-
-    })
-
-
-    .catch(error => {
-
-
-        console.log("ERROR REGISTRO:", error);
-
-
-
-        document.getElementById("resultado").innerHTML =
-
-        "❌ Error al registrar";
-
+        document.getElementById("resultado").innerHTML=
+        "Error al registrar.";
 
     });
 
+}
+
+
+
+//======================================
+// DETENER CÁMARA
+//======================================
+
+function detenerScanner(){
+
+    if(html5QrCode){
+
+        html5QrCode.stop()
+
+        .then(()=>{
+
+            html5QrCode.clear();
+
+            scannerActivo=false;
+
+            document.getElementById("reader").style.display="none";
+
+        })
+
+        .catch(console.error);
+
+    }
+
+}
+
+
+
+//======================================
+// REINICIAR
+//======================================
+
+function limpiarPantalla(){
+
+    setTimeout(()=>{
+
+        trabajadorActual=null;
+
+        document.getElementById("trabajador").style.display="none";
+
+        document.getElementById("btnEntrada").disabled=true;
+
+        document.getElementById("btnSalida").disabled=true;
+
+        document.getElementById("resultado").innerHTML="";
+
+    },3000);
 
 }
