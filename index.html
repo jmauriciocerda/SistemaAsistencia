@@ -36,9 +36,14 @@
 
     <main class="card">
 
+        <!-- Fecha y Hora -->
+
         <div id="fechaHora" class="fechaHora"></div>
 
-        <!-- Lector QR -->
+
+        <!-- ========================= -->
+        <!-- LECTOR QR -->
+        <!-- ========================= -->
 
         <div class="scanner-container">
 
@@ -60,7 +65,41 @@
 
         </div>
 
-        <!-- Información trabajador -->
+
+        <!-- ========================= -->
+        <!-- INGRESO MANUAL -->
+        <!-- ========================= -->
+
+        <hr class="separador">
+
+        <div class="manual-login">
+
+            <p class="manual-title">
+
+                ¿Problemas con el código QR?
+
+            </p>
+
+            <input
+                type="text"
+                id="rutManual"
+                placeholder="Ingrese su RUT">
+
+            <button
+                id="btnRut"
+                class="scan-btn"
+                onclick="buscarPorRut()">
+
+                Buscar trabajador
+
+            </button>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- DATOS DEL TRABAJADOR -->
+        <!-- ========================= -->
 
         <div
             id="trabajador"
@@ -72,7 +111,10 @@
 
         </div>
 
-        <!-- Botones -->
+
+        <!-- ========================= -->
+        <!-- BOTONES -->
+        <!-- ========================= -->
 
         <div class="botones">
 
@@ -98,6 +140,9 @@
 
         </div>
 
+
+        <!-- Resultado -->
+
         <div
             id="resultado"
             class="resultado">
@@ -114,7 +159,7 @@
 
 </div>
 
-<!-- Librería lector QR -->
+<!-- Librería QR -->
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
