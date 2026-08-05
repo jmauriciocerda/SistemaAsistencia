@@ -17,9 +17,9 @@ const MODO_PRUEBA = true;
 
 const UBICACION_PLANTA = {
 
-    lat:-33.48870,
+    lat:-33.488593,
 
-    lng:-70.71155
+    lng:-70.712305
 
 };
 
