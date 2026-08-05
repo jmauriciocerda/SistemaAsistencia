@@ -12,7 +12,7 @@ const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzr3jgLZLJKl1ecUOKbb
 // TRUE = pruebas fuera de planta
 // FALSE = funcionamiento real
 
-const MODO_PRUEBA = true;
+const MODO_PRUEBA = false;
 
 
 const UBICACION_PLANTA = {
