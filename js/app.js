@@ -124,41 +124,34 @@ function iniciarScanner(){
 
 
 
-    html5QrCode.start(
+html5QrCode.start(
 
+    {
+        facingMode: { ideal: "environment" }
+    },
 
+    {
 
-        {facingMode:"environment"},
+        fps:15,
 
-
-
-        {
-
-
-            fps:10,
-
-
-            qrbox:{
-
-
-                width:220,
-
-
-                height:220
-
-
-            }
-
-
+        qrbox:{
+            width:300,
+            height:300
         },
 
+        aspectRatio:1.777,
 
+        videoConstraints:{
+            width:{ ideal:1920 },
+            height:{ ideal:1080 },
+            facingMode:"environment"
+        }
 
-        onScanSuccess
+    },
 
+    onScanSuccess
 
-
-    )
+)
 
 
 
