@@ -194,46 +194,135 @@ function identificarTrabajador(tipo, valor) {
 
     }
 
+    //==================================
+    // EVITAR CACHÉ DEL NAVEGADOR
+    //==================================
+
+    const urlConsulta =
+        URL_SCRIPT +
+        consulta +
+        "&_=" +
+        Date.now();
+
     console.log(
         "Consulta:",
-        URL_SCRIPT + consulta
+        urlConsulta
     );
 
     document.getElementById("resultado").innerHTML =
         "🔎 Buscando trabajador...";
 
-    fetch(URL_SCRIPT + consulta)
+    //==================================
+    // CONSULTA
+    //==================================
 
-        .then(respuesta => respuesta.json())
+    fetch(urlConsulta, {
 
-        .then(datos => {
+        method: "GET",
 
-            console.log(
-                "Respuesta:",
-                datos
+        cache: "no-store",
+
+        redirect: "follow"
+
+    })
+
+    .then(respuesta => {
+
+        console.log(
+            "HTTP:",
+            respuesta.status,
+            respuesta.statusText
+        );
+
+        console.log(
+            "URL final:",
+            respuesta.url
+        );
+
+        return respuesta.text();
+
+    })
+
+    .then(texto => {
+
+        console.log(
+            "Respuesta recibida:",
+            texto
+        );
+
+        //==================================
+        // VALIDAR RESPUESTA VACÍA
+        //==================================
+
+        if (!texto || texto.trim() === "") {
+
+            throw new Error(
+                "El servidor no devolvió información."
             );
 
-            if (datos.error) {
+        }
 
-                document.getElementById("resultado").innerHTML =
-                    "⚠️ " + datos.error;
+        //==================================
+        // INTENTAR CONVERTIR A JSON
+        //==================================
 
-                return;
+        let datos;
 
-            }
+        try {
 
-            mostrarTrabajador(datos);
+            datos = JSON.parse(texto);
 
-        })
+        }
+        catch (error) {
 
-        .catch(error => {
+            console.error(
+                "La respuesta NO es JSON:",
+                texto
+            );
 
-            console.log(error);
+            throw new Error(
+                "El servidor devolvió una respuesta que no es JSON."
+            );
+
+        }
+
+        console.log(
+            "Respuesta JSON:",
+            datos
+        );
+
+        //==================================
+        // ERROR DEVUELTO POR APPS SCRIPT
+        //==================================
+
+        if (datos.error) {
 
             document.getElementById("resultado").innerHTML =
-                "❌ Error consultando trabajador.";
+                "⚠️ " + datos.error;
 
-        });
+            return;
+
+        }
+
+        //==================================
+        // MOSTRAR TRABAJADOR
+        //==================================
+
+        mostrarTrabajador(datos);
+
+    })
+
+    .catch(error => {
+
+        console.error(
+            "Error consultando trabajador:",
+            error
+        );
+
+        document.getElementById("resultado").innerHTML =
+            "❌ No fue posible consultar al trabajador.";
+
+    });
 
 }
 
