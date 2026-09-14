@@ -1,3 +1,4 @@
+```javascript
 //======================================
 // CONFIGURACIÓN
 //======================================
@@ -17,15 +18,14 @@ const MODO_PRUEBA = false;
 
 const UBICACION_PLANTA = {
 
-    lat:-33.488593,
+    lat: -33.488593,
 
-    lng:-70.712305
+    lng: -70.712305
 
 };
 
 
 const RADIO_PERMITIDO = 500;
-
 
 
 //======================================
@@ -39,47 +39,34 @@ let scannerActivo = false;
 let trabajadorActual = null;
 
 
-
 //======================================
 // INICIO
 //======================================
 
 window.onload = () => {
 
-
     actualizarFechaHora();
 
-
-    setInterval(actualizarFechaHora,1000);
-
+    setInterval(actualizarFechaHora, 1000);
 
 
     document
-
         .getElementById("btnScan")
-
         .addEventListener("click", iniciarScanner);
 
-
 };
-
-
-
 
 
 //======================================
 // FECHA Y HORA
 //======================================
 
-function actualizarFechaHora(){
-
+function actualizarFechaHora() {
 
     const ahora = new Date();
 
 
-
     document.getElementById("fechaHora").innerHTML =
-
 
         ahora.toLocaleDateString("es-CL")
 
@@ -91,174 +78,117 @@ function actualizarFechaHora(){
 
         ahora.toLocaleTimeString("es-CL");
 
-
 }
-
-
-
-
 
 
 //======================================
 // INICIAR LECTOR QR
 //======================================
 
-function iniciarScanner(){
+function iniciarScanner() {
 
-
-
-    if(scannerActivo) return;
-
+    if (scannerActivo) return;
 
 
     scannerActivo = true;
 
 
-
-    document.getElementById("reader").style.display="block";
-
+    document.getElementById("reader").style.display = "block";
 
 
     html5QrCode = new Html5Qrcode("reader");
 
 
+    html5QrCode.start(
 
-
-html5QrCode.start(
-
-    {
-        facingMode: { ideal: "environment" }
-    },
-
-    {
-
-        fps:15,
-
-        qrbox:{
-            width:300,
-            height:300
+        {
+            facingMode: { ideal: "environment" }
         },
 
-        aspectRatio:1.777,
+        {
 
-        videoConstraints:{
-            width:{ ideal:1920 },
-            height:{ ideal:1080 },
-            facingMode:"environment"
-        }
+            fps: 15,
 
-    },
+            qrbox: {
+                width: 300,
+                height: 300
+            },
 
-    onScanSuccess
+            aspectRatio: 1.777,
 
-)
+            videoConstraints: {
+                width: { ideal: 1920 },
+                height: { ideal: 1080 },
+                facingMode: "environment"
+            }
 
+        },
 
+        onScanSuccess
 
-    .catch(error=>{
+    )
 
+    .catch(error => {
 
         console.log(error);
 
-
-
-        scannerActivo=false;
-
-
+        scannerActivo = false;
 
         alert("No fue posible abrir la cámara.");
 
-
-
     });
 
-
-
 }
-
-
-
-
 
 
 //======================================
 // QR DETECTADO
 //======================================
 
-function onScanSuccess(decodedText){
-
-
+function onScanSuccess(decodedText) {
 
     detenerScanner();
-
 
 
     let identificador = "";
 
 
-
-    try{
-
+    try {
 
         const url = new URL(decodedText);
 
-
-
         identificador = url.searchParams.get("ID");
-
-
 
     }
 
-
-
-    catch{
-
+    catch {
 
         identificador = decodedText.trim();
 
-
-
     }
 
 
-
-
-    if(!identificador){
-
+    if (!identificador) {
 
         document.getElementById("resultado").innerHTML =
 
-
-        "⚠️ QR inválido.";
-
+            "⚠️ QR inválido.";
 
         return;
-
 
     }
 
 
-
-
-    identificarTrabajador("ID",identificador);
-
-
+    identificarTrabajador("ID", identificador);
 
 }
-
-
-
-
 
 
 //======================================
 // BUSCAR POR RUT
 //======================================
 
-function buscarPorRut(){
-
-
+function buscarPorRut() {
 
     let rut = document
 
@@ -267,411 +197,399 @@ function buscarPorRut(){
         .value;
 
 
-
     rut = normalizarRut(rut);
 
 
-
-
-    if(rut===""){
-
+    if (rut === "") {
 
         document.getElementById("resultado").innerHTML =
 
-
-        "⚠️ Ingrese un RUT.";
-
+            "⚠️ Ingrese un RUT.";
 
         return;
-
 
     }
 
 
-
-
-    identificarTrabajador("RUT",rut);
-
-
+    identificarTrabajador("RUT", rut);
 
 }
-
-
-
-
 
 
 //======================================
 // IDENTIFICACIÓN TRABAJADOR
 //======================================
 
-function identificarTrabajador(tipo,valor){
+function identificarTrabajador(tipo, valor) {
+
+    let consulta = "";
 
 
+    if (tipo === "ID") {
 
-    let consulta="";
-
-
-
-
-    if(tipo==="ID"){
-
-
-        consulta="?ID="+encodeURIComponent(valor);
-
-
+        consulta = "?ID=" + encodeURIComponent(valor);
 
     }
 
 
+    if (tipo === "RUT") {
 
-    if(tipo==="RUT"){
-
-
-        consulta="?RUT="+encodeURIComponent(valor);
-
-
+        consulta = "?RUT=" + encodeURIComponent(valor);
 
     }
-
-
-
 
 
     console.log(
 
         "Consulta:",
 
-        URL_SCRIPT+consulta
+        URL_SCRIPT + consulta
 
     );
 
 
+    fetch(URL_SCRIPT + consulta)
+
+        .then(respuesta => respuesta.json())
+
+        .then(datos => {
+
+            console.log(
+
+                "Respuesta:",
+
+                datos
+
+            );
 
 
+            if (datos.error) {
+
+                document.getElementById("resultado").innerHTML =
+
+                    "⚠️ " + datos.error;
+
+                return;
+
+            }
 
 
-    fetch(URL_SCRIPT+consulta)
+            mostrarTrabajador(datos);
+
+        })
 
 
+        .catch(error => {
 
-    .then(respuesta=>respuesta.json())
-
-
-
-    .then(datos=>{
-
-
-
-        console.log(
-
-            "Respuesta:",
-
-            datos
-
-        );
-
-
-
-
-
-        if(datos.error){
-
-
+            console.log(error);
 
             document.getElementById("resultado").innerHTML =
 
+                "❌ Error consultando trabajador.";
 
-            "⚠️ "+datos.error;
-
-
-
-            return;
-
-
-
-        }
-
-
-
-
-
-        mostrarTrabajador(datos);
-
-
-
-    })
-
-
-
-    .catch(error=>{
-
-
-
-        console.log(error);
-
-
-
-        document.getElementById("resultado").innerHTML =
-
-
-        "❌ Error consultando trabajador.";
-
-
-
-    });
-
-
+        });
 
 }
-
-
-
-
 
 
 //======================================
 // MOSTRAR TRABAJADOR
 //======================================
 
-function mostrarTrabajador(datos){
-
-
+function mostrarTrabajador(datos) {
 
     trabajadorActual = datos;
 
 
-
-
-
     document.getElementById("nombreTrabajador").innerHTML =
 
-
-    datos.nombre;
-
-
-
+        datos.nombre;
 
 
     document.getElementById("cargoTrabajador").innerHTML =
 
-
-    "RUT: "+datos.rut;
-
-
-
-
+        "RUT: " + datos.rut;
 
 
     document.getElementById("trabajador")
 
-    .style.display="block";
-
-
-
+        .style.display = "block";
 
 
     document.getElementById("btnEntrada")
 
-    .disabled=false;
-
-
-
+        .disabled = false;
 
 
     document.getElementById("btnSalida")
 
-    .disabled=false;
-
-
-
-
+        .disabled = false;
 
 
     document.getElementById("resultado").innerHTML =
 
-
-    "✅ Trabajador identificado.";
-
-
+        "✅ Trabajador identificado.";
 
 }
-
-
-
-
 
 
 //======================================
 // NORMALIZAR RUT
 //======================================
 
-function normalizarRut(rut){
-
-
+function normalizarRut(rut) {
 
     return rut
 
         .toString()
 
-        .replace(/\./g,"")
+        .replace(/\./g, "")
 
-        .replace(/-/g,"")
+        .replace(/-/g, "")
 
-        .replace(/\s/g,"")
+        .replace(/\s/g, "")
 
         .toUpperCase();
 
+}
+
+
+//======================================
+// REGISTRAR ENTRADA / SALIDA
+//======================================
+
+function marcar(tipo) {
+
+
+    if (trabajadorActual == null) {
+
+        document.getElementById("resultado").innerHTML =
+
+            "⚠️ Primero identifique al trabajador.";
+
+        return;
+
+    }
+
+
+    //==================================
+    // SI ES SALIDA
+    //==================================
+
+    if (tipo === "Salida") {
+
+        mostrarFormularioOF();
+
+        return;
+
+    }
+
+
+    //==================================
+    // SI ES ENTRADA
+    //==================================
+
+    ejecutarMarcacion("Entrada", "");
+
+}
+
+
+//======================================
+// MOSTRAR FORMULARIO OF
+//======================================
+
+function mostrarFormularioOF() {
+
+    document.getElementById("formularioOF")
+
+        .style.display = "block";
+
+
+    document.getElementById("btnEntrada")
+
+        .disabled = true;
+
+
+    document.getElementById("btnSalida")
+
+        .disabled = true;
+
+
+    document.getElementById("ofManual").value = "";
+
+
+    document.getElementById("resultado").innerHTML =
+
+        "Ingrese la OF correspondiente a su trabajo.";
+
+
+    document.getElementById("ofManual").focus();
+
+}
+
+
+//======================================
+// CONFIRMAR SALIDA
+//======================================
+
+function confirmarSalida() {
+
+
+    let of = document
+
+        .getElementById("ofManual")
+
+        .value
+
+        .trim();
+
+
+    if (of === "") {
+
+        document.getElementById("resultado").innerHTML =
+
+            "⚠️ Debe ingresar un número de OF.";
+
+        document.getElementById("ofManual").focus();
+
+        return;
+
+    }
+
+
+    // Solo números
+
+    if (!/^\d+$/.test(of)) {
+
+        document.getElementById("resultado").innerHTML =
+
+            "⚠️ La OF debe contener solamente números.";
+
+        document.getElementById("ofManual").focus();
+
+        return;
+
+    }
+
+
+    document.getElementById("formularioOF")
+
+        .style.display = "none";
+
+
+    ejecutarMarcacion("Salida", of);
+
+}
+
+
+//======================================
+// CANCELAR SALIDA
+//======================================
+
+function cancelarSalida() {
+
+
+    document.getElementById("formularioOF")
+
+        .style.display = "none";
+
+
+    document.getElementById("ofManual").value = "";
+
+
+    document.getElementById("btnEntrada")
+
+        .disabled = false;
+
+
+    document.getElementById("btnSalida")
+
+        .disabled = false;
+
+
+    document.getElementById("resultado").innerHTML =
+
+        "Registro de salida cancelado.";
 
 
 }
 
 
 //======================================
-// FIN PARTE 1/2
-//======================================
-//======================================
-// REGISTRAR ENTRADA / SALIDA
+// EJECUTAR MARCACIÓN
 //======================================
 
-function marcar(tipo){
-
-
-
-    if(trabajadorActual==null){
-
-
-
-        document.getElementById("resultado").innerHTML =
-
-
-        "⚠️ Primero identifique al trabajador.";
-
-
-
-        return;
-
-
-
-    }
-
-
-
+function ejecutarMarcacion(tipo, of) {
 
 
     const ahora = new Date();
 
 
-
-
-
     const datos = {
-
-
 
         nombre: trabajadorActual.nombre,
 
-
-
         tipo: tipo,
-
-
 
         fecha: ahora.toLocaleDateString("es-CL"),
 
+        hora: ahora.toLocaleTimeString("es-CL"),
 
-
-        hora: ahora.toLocaleTimeString("es-CL")
-
-
+        OF: of
 
     };
 
 
-
-
-
     document.getElementById("resultado").innerHTML =
 
+        "📍 Validando ubicación...";
 
 
-    "📍 Validando ubicación...";
+    document.getElementById("btnEntrada").disabled = true;
 
-
-
-
-
-    document.getElementById("btnEntrada").disabled=true;
-
-
-    document.getElementById("btnSalida").disabled=true;
-
-
-
-
+    document.getElementById("btnSalida").disabled = true;
 
 
     validarUbicacion()
 
-    .then(permitido=>{
+        .then(permitido => {
 
 
-
-        if(!permitido){
-
+            if (!permitido) {
 
 
-            document.getElementById("btnEntrada").disabled=false;
+                document.getElementById("btnEntrada").disabled = false;
+
+                document.getElementById("btnSalida").disabled = false;
 
 
-            document.getElementById("btnSalida").disabled=false;
+                return;
+
+            }
 
 
+            enviarRegistro(datos);
 
-            return;
-
-
-
-        }
-
-
-
-
-        enviarRegistro(datos);
-
-
-
-    });
-
-
+        });
 
 }
-
-
-
-
 
 
 //======================================
 // VALIDAR UBICACIÓN GPS
 //======================================
 
-function validarUbicacion(){
+function validarUbicacion() {
 
 
-
-    return new Promise((resolve)=>{
-
-
-
+    return new Promise((resolve) => {
 
 
         //==================================
         // MODO PRUEBA
         //==================================
 
-        if(MODO_PRUEBA === true){
-
+        if (MODO_PRUEBA === true) {
 
 
             console.log(
@@ -681,647 +599,364 @@ function validarUbicacion(){
             );
 
 
-
             document.getElementById("resultado").innerHTML =
 
-
-
-            "🧪 Modo prueba activo.<br>Validación GPS omitida.";
-
-
-
+                "🧪 Modo prueba activo.<br>Validación GPS omitida.";
 
 
             resolve(true);
 
-
-
             return;
 
-
-
         }
-
-
-
 
 
         //==================================
         // MODO REAL
         //==================================
 
-
-
-        if(!navigator.geolocation){
-
+        if (!navigator.geolocation) {
 
 
             document.getElementById("resultado").innerHTML =
 
-
-            "❌ Ubicación no disponible.";
-
+                "❌ Ubicación no disponible.";
 
 
             resolve(false);
 
-
-
             return;
 
-
-
         }
-
-
-
-
 
 
         navigator.geolocation.getCurrentPosition(
 
 
-
-            posicion=>{
-
+            posicion => {
 
 
                 const distancia = calcularDistancia(
 
-
-
                     posicion.coords.latitude,
-
-
 
                     posicion.coords.longitude,
 
-
-
                     UBICACION_PLANTA.lat,
-
-
 
                     UBICACION_PLANTA.lng
 
-
-
                 );
-
-
-
 
 
                 console.log(
 
-
-
                     "Distancia planta:",
-
-
 
                     Math.round(distancia),
 
-
-
                     "metros"
-
-
 
                 );
 
 
-
-
-
-
-
-                if(distancia <= RADIO_PERMITIDO){
-
+                if (distancia <= RADIO_PERMITIDO) {
 
 
                     resolve(true);
 
 
-
                 }
 
-
-
-                else{
-
+                else {
 
 
                     document.getElementById("resultado").innerHTML =
 
+                        "❌ Fuera de zona autorizada.<br>" +
 
+                        "Distancia: " +
 
-                    "❌ Fuera de zona autorizada.<br>"+
+                        Math.round(distancia) +
 
-
-
-                    "Distancia: "+
-
-
-
-                    Math.round(distancia)+
-
-
-
-                    " metros";
-
-
-
+                        " metros";
 
 
                     resolve(false);
 
-
-
                 }
-
-
-
 
 
             },
 
 
-
-
-
-            error=>{
-
+            error => {
 
 
                 console.log(error);
 
 
-
                 document.getElementById("resultado").innerHTML =
 
-
-
-                "⚠️ Active la ubicación para marcar asistencia.";
-
+                    "⚠️ Active la ubicación para marcar asistencia.";
 
 
                 resolve(false);
 
-
-
             },
-
-
-
 
 
             {
 
+                enableHighAccuracy: true,
 
+                timeout: 10000,
 
-                enableHighAccuracy:true,
-
-
-                timeout:10000,
-
-
-                maximumAge:0
-
-
+                maximumAge: 0
 
             }
 
 
-
-
-
         );
-
-
 
     });
 
-
-
 }
-
-
-
-
-
-
 
 
 //======================================
 // CALCULAR DISTANCIA
 //======================================
 
-function calcularDistancia(lat1,lon1,lat2,lon2){
-
+function calcularDistancia(lat1, lon1, lat2, lon2) {
 
 
     const R = 6371000;
 
 
+    const dLat =
 
-    const dLat = (lat2-lat1)*Math.PI/180;
-
-
-    const dLon = (lon2-lon1)*Math.PI/180;
+        (lat2 - lat1) * Math.PI / 180;
 
 
+    const dLon =
 
+        (lon2 - lon1) * Math.PI / 180;
 
 
     const a =
 
+        Math.sin(dLat / 2) *
+
+        Math.sin(dLat / 2)
 
 
-    Math.sin(dLat/2) * Math.sin(dLat/2)
+        +
 
 
-
-    +
-
+        Math.cos(lat1 * Math.PI / 180)
 
 
-    Math.cos(lat1*Math.PI/180)
+        *
 
 
-
-    *
-
+        Math.cos(lat2 * Math.PI / 180)
 
 
-    Math.cos(lat2*Math.PI/180)
+        *
 
 
+        Math.sin(dLon / 2) *
 
-    *
-
-
-
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-
-
-
-
-
+        Math.sin(dLon / 2);
 
 
     return R * 2 * Math.atan2(
 
-
-
         Math.sqrt(a),
 
-
-
-        Math.sqrt(1-a)
-
-
+        Math.sqrt(1 - a)
 
     );
 
-
-
 }
-
-
-
-
-
-
 
 
 //======================================
 // ENVIAR REGISTRO A APPS SCRIPT
 //======================================
 
-function enviarRegistro(datos){
+function enviarRegistro(datos) {
 
 
+    fetch(URL_SCRIPT, {
 
+        method: "POST",
 
-
-    fetch(URL_SCRIPT,{
-
-
-
-        method:"POST",
-
-
-
-        body:JSON.stringify(datos)
-
-
+        body: JSON.stringify(datos)
 
     })
 
 
+        .then(respuesta => respuesta.json())
 
 
-
-    .then(respuesta=>respuesta.json())
-
+        .then(resultado => {
 
 
+            console.log(
+
+                "Respuesta registro:",
+
+                resultado
+
+            );
 
 
-    .then(resultado=>{
+            if (resultado.permitido === false) {
 
 
+                document.getElementById("resultado").innerHTML =
+
+                    "⚠️ " + resultado.mensaje;
 
 
+                document.getElementById("btnEntrada").disabled = false;
 
-        console.log(
-
-            "Respuesta registro:",
-
-            resultado
-
-        );
+                document.getElementById("btnSalida").disabled = false;
 
 
+                return;
 
-
-
-
-
-        if(resultado.permitido === false){
-
+            }
 
 
             document.getElementById("resultado").innerHTML =
 
+                "✅ Registro realizado correctamente.<br>" +
 
+                trabajadorActual.nombre;
 
-            "⚠️ "+resultado.mensaje;
 
+            limpiarPantalla();
 
+        })
 
 
+        .catch(error => {
 
-            document.getElementById("btnEntrada").disabled=false;
 
+            console.log(error);
 
-            document.getElementById("btnSalida").disabled=false;
 
+            document.getElementById("resultado").innerHTML =
 
+                "❌ Error al registrar.";
 
 
+            document.getElementById("btnEntrada").disabled = false;
 
-            return;
+            document.getElementById("btnSalida").disabled = false;
 
-
-
-        }
-
-
-
-
-
-
-
-        document.getElementById("resultado").innerHTML =
-
-
-
-        "✅ Registro realizado correctamente.<br>"+
-
-
-
-        trabajadorActual.nombre;
-
-
-
-
-
-
-
-        limpiarPantalla();
-
-
-
-
-
-    })
-
-
-
-
-
-
-    .catch(error=>{
-
-
-
-
-
-        console.log(error);
-
-
-
-
-
-        document.getElementById("resultado").innerHTML =
-
-
-
-        "❌ Error al registrar.";
-
-
-
-
-
-        document.getElementById("btnEntrada").disabled=false;
-
-
-        document.getElementById("btnSalida").disabled=false;
-
-
-
-
-
-    });
-
-
-
+        });
 
 }
-
-
-
-
-
-
-
 
 
 //======================================
 // DETENER CÁMARA
 //======================================
 
-function detenerScanner(){
+function detenerScanner() {
 
 
-
-
-
-    if(html5QrCode){
-
-
-
+    if (html5QrCode) {
 
 
         html5QrCode.stop()
 
 
+            .then(() => {
 
 
+                html5QrCode.clear();
 
-        .then(()=>{
-
-
-
+                scannerActivo = false;
 
 
-            html5QrCode.clear();
+                document.getElementById("reader")
+
+                    .style.display = "none";
 
 
+            })
 
 
+            .catch(error => {
 
-            scannerActivo=false;
+                console.log(error);
 
-
-
-
-
-            document.getElementById("reader")
-
-            .style.display="none";
-
-
-
-
-
-        })
-
-
-
-
-
-        .catch(error=>{
-
-
-
-            console.log(error);
-
-
-
-        });
-
-
-
-
+            });
 
     }
 
-
-
-
-
 }
-
-
-
-
-
-
-
 
 
 //======================================
 // LIMPIAR PANTALLA
 //======================================
 
-function limpiarPantalla(){
+function limpiarPantalla() {
 
 
+    setTimeout(() => {
 
 
-
-    setTimeout(()=>{
-
-
-
-
-
-        trabajadorActual=null;
-
-
-
+        trabajadorActual = null;
 
 
         document.getElementById("trabajador")
 
-        .style.display="none";
-
-
-
-
-
+            .style.display = "none";
 
 
         document.getElementById("btnEntrada")
 
-        .disabled=true;
-
-
-
-
-
+            .disabled = true;
 
 
         document.getElementById("btnSalida")
 
-        .disabled=true;
-
-
-
-
-
+            .disabled = true;
 
 
         document.getElementById("rutManual")
 
-        .value="";
+            .value = "";
 
 
+        document.getElementById("ofManual")
+
+            .value = "";
 
 
+        document.getElementById("formularioOF")
 
+            .style.display = "none";
 
 
         document.getElementById("resultado")
 
-        .innerHTML="";
+            .innerHTML = "";
 
 
-
-
-
-    },5000);
-
-
-
+    }, 5000);
 
 }
-
 
 
 //======================================
 // FIN APP.JS
 //======================================
+```
