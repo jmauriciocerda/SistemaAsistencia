@@ -2,7 +2,7 @@
 // CONFIGURACIÓN
 //======================================
 
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzr3jgLZLJKl1ecUOKbb_O9eHwd0SeGMy0_dGSxkvK7UgQzm5MwKV6uEeRRtFEUXSnU/exec";
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwfPL79OmrrL0DWEhcnF0yCAwdFmXINiHJbw_e9wyXVwgGrJqEH-i9dmXQJOXognevf/exec";
 
 //======================================
 // CONFIGURACIÓN GEOLOCALIZACIÓN
