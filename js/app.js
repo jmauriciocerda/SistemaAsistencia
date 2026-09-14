@@ -1,43 +1,29 @@
-```javascript
 //======================================
 // CONFIGURACIÓN
 //======================================
 
 const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzr3jgLZLJKl1ecUOKbb_O9eHwd0SeGMy0_dGSxkvK7UgQzm5MwKV6uEeRRtFEUXSnU/exec";
 
-
 //======================================
 // CONFIGURACIÓN GEOLOCALIZACIÓN
 //======================================
 
-// TRUE = pruebas fuera de planta
-// FALSE = funcionamiento real
-
 const MODO_PRUEBA = false;
 
-
 const UBICACION_PLANTA = {
-
     lat: -33.488593,
-
     lng: -70.712305
-
 };
 
-
 const RADIO_PERMITIDO = 500;
-
 
 //======================================
 // VARIABLES GLOBALES
 //======================================
 
 let html5QrCode = null;
-
 let scannerActivo = false;
-
 let trabajadorActual = null;
-
 
 //======================================
 // INICIO
@@ -49,13 +35,11 @@ window.onload = () => {
 
     setInterval(actualizarFechaHora, 1000);
 
-
     document
         .getElementById("btnScan")
         .addEventListener("click", iniciarScanner);
 
 };
-
 
 //======================================
 // FECHA Y HORA
@@ -65,21 +49,12 @@ function actualizarFechaHora() {
 
     const ahora = new Date();
 
-
     document.getElementById("fechaHora").innerHTML =
-
-        ahora.toLocaleDateString("es-CL")
-
-        +
-
-        "<br>"
-
-        +
-
+        ahora.toLocaleDateString("es-CL") +
+        "<br>" +
         ahora.toLocaleTimeString("es-CL");
 
 }
-
 
 //======================================
 // INICIAR LECTOR QR
@@ -89,57 +64,50 @@ function iniciarScanner() {
 
     if (scannerActivo) return;
 
-
     scannerActivo = true;
-
 
     document.getElementById("reader").style.display = "block";
 
-
     html5QrCode = new Html5Qrcode("reader");
 
-
     html5QrCode.start(
-
         {
-            facingMode: { ideal: "environment" }
+            facingMode: {
+                ideal: "environment"
+            }
         },
-
         {
-
             fps: 15,
-
             qrbox: {
                 width: 300,
                 height: 300
             },
-
             aspectRatio: 1.777,
-
             videoConstraints: {
-                width: { ideal: 1920 },
-                height: { ideal: 1080 },
+                width: {
+                    ideal: 1920
+                },
+                height: {
+                    ideal: 1080
+                },
                 facingMode: "environment"
             }
-
         },
-
         onScanSuccess
-
     )
-
     .catch(error => {
 
         console.log(error);
 
         scannerActivo = false;
 
+        document.getElementById("reader").style.display = "none";
+
         alert("No fue posible abrir la cámara.");
 
     });
 
 }
-
 
 //======================================
 // QR DETECTADO
@@ -149,9 +117,7 @@ function onScanSuccess(decodedText) {
 
     detenerScanner();
 
-
     let identificador = "";
-
 
     try {
 
@@ -160,29 +126,24 @@ function onScanSuccess(decodedText) {
         identificador = url.searchParams.get("ID");
 
     }
-
     catch {
 
         identificador = decodedText.trim();
 
     }
 
-
     if (!identificador) {
 
         document.getElementById("resultado").innerHTML =
-
             "⚠️ QR inválido.";
 
         return;
 
     }
 
-
     identificarTrabajador("ID", identificador);
 
 }
-
 
 //======================================
 // BUSCAR POR RUT
@@ -191,30 +152,23 @@ function onScanSuccess(decodedText) {
 function buscarPorRut() {
 
     let rut = document
-
         .getElementById("rutManual")
-
         .value;
 
-
     rut = normalizarRut(rut);
-
 
     if (rut === "") {
 
         document.getElementById("resultado").innerHTML =
-
             "⚠️ Ingrese un RUT.";
 
         return;
 
     }
 
-
     identificarTrabajador("RUT", rut);
 
 }
-
 
 //======================================
 // IDENTIFICACIÓN TRABAJADOR
@@ -224,29 +178,29 @@ function identificarTrabajador(tipo, valor) {
 
     let consulta = "";
 
-
     if (tipo === "ID") {
 
-        consulta = "?ID=" + encodeURIComponent(valor);
+        consulta =
+            "?ID=" +
+            encodeURIComponent(valor);
 
     }
-
 
     if (tipo === "RUT") {
 
-        consulta = "?RUT=" + encodeURIComponent(valor);
+        consulta =
+            "?RUT=" +
+            encodeURIComponent(valor);
 
     }
 
-
     console.log(
-
         "Consulta:",
-
         URL_SCRIPT + consulta
-
     );
 
+    document.getElementById("resultado").innerHTML =
+        "🔎 Buscando trabajador...";
 
     fetch(URL_SCRIPT + consulta)
 
@@ -255,42 +209,33 @@ function identificarTrabajador(tipo, valor) {
         .then(datos => {
 
             console.log(
-
                 "Respuesta:",
-
                 datos
-
             );
-
 
             if (datos.error) {
 
                 document.getElementById("resultado").innerHTML =
-
                     "⚠️ " + datos.error;
 
                 return;
 
             }
 
-
             mostrarTrabajador(datos);
 
         })
-
 
         .catch(error => {
 
             console.log(error);
 
             document.getElementById("resultado").innerHTML =
-
                 "❌ Error consultando trabajador.";
 
         });
 
 }
-
 
 //======================================
 // MOSTRAR TRABAJADOR
@@ -300,38 +245,25 @@ function mostrarTrabajador(datos) {
 
     trabajadorActual = datos;
 
-
     document.getElementById("nombreTrabajador").innerHTML =
-
         datos.nombre;
 
-
     document.getElementById("cargoTrabajador").innerHTML =
-
         "RUT: " + datos.rut;
 
+    document.getElementById("trabajador").style.display =
+        "block";
 
-    document.getElementById("trabajador")
+    document.getElementById("btnEntrada").disabled =
+        false;
 
-        .style.display = "block";
-
-
-    document.getElementById("btnEntrada")
-
-        .disabled = false;
-
-
-    document.getElementById("btnSalida")
-
-        .disabled = false;
-
+    document.getElementById("btnSalida").disabled =
+        false;
 
     document.getElementById("resultado").innerHTML =
-
         "✅ Trabajador identificado.";
 
 }
-
 
 //======================================
 // NORMALIZAR RUT
@@ -340,40 +272,32 @@ function mostrarTrabajador(datos) {
 function normalizarRut(rut) {
 
     return rut
-
         .toString()
-
         .replace(/\./g, "")
-
         .replace(/-/g, "")
-
         .replace(/\s/g, "")
-
         .toUpperCase();
 
 }
 
-
 //======================================
-// REGISTRAR ENTRADA / SALIDA
+// MARCAR ENTRADA / SALIDA
 //======================================
 
 function marcar(tipo) {
 
-
-    if (trabajadorActual == null) {
+    if (trabajadorActual === null) {
 
         document.getElementById("resultado").innerHTML =
-
             "⚠️ Primero identifique al trabajador.";
 
         return;
 
     }
 
-
     //==================================
     // SI ES SALIDA
+    // PEDIR OF ANTES DE CONTINUAR
     //==================================
 
     if (tipo === "Salida") {
@@ -384,15 +308,13 @@ function marcar(tipo) {
 
     }
 
-
     //==================================
-    // SI ES ENTRADA
+    // ENTRADA
     //==================================
 
     ejecutarMarcacion("Entrada", "");
 
 }
-
 
 //======================================
 // MOSTRAR FORMULARIO OF
@@ -400,33 +322,39 @@ function marcar(tipo) {
 
 function mostrarFormularioOF() {
 
-    document.getElementById("formularioOF")
+    const formulario =
+        document.getElementById("formularioOF");
 
-        .style.display = "block";
+    if (formulario) {
 
+        formulario.style.display = "block";
 
-    document.getElementById("btnEntrada")
+    }
 
-        .disabled = true;
-
-
-    document.getElementById("btnSalida")
-
-        .disabled = true;
-
-
-    document.getElementById("ofManual").value = "";
-
-
-    document.getElementById("resultado").innerHTML =
-
-        "Ingrese la OF correspondiente a su trabajo.";
-
-
-    document.getElementById("ofManual").focus();
+    document
+        .getElementById("ofManual")
+        .focus();
 
 }
 
+//======================================
+// CANCELAR FORMULARIO OF
+//======================================
+
+function cancelarSalida() {
+
+    const formulario =
+        document.getElementById("formularioOF");
+
+    if (formulario) {
+
+        formulario.style.display = "none";
+
+    }
+
+    document.getElementById("ofManual").value = "";
+
+}
 
 //======================================
 // CONFIRMAR SALIDA
@@ -434,86 +362,62 @@ function mostrarFormularioOF() {
 
 function confirmarSalida() {
 
+    const campoOF =
+        document.getElementById("ofManual");
 
-    let of = document
+    const of =
+        campoOF.value.trim();
 
-        .getElementById("ofManual")
-
-        .value
-
-        .trim();
-
+    //==================================
+    // VALIDAR OF
+    //==================================
 
     if (of === "") {
 
         document.getElementById("resultado").innerHTML =
+            "⚠️ Debe ingresar la OF.";
 
-            "⚠️ Debe ingresar un número de OF.";
-
-        document.getElementById("ofManual").focus();
+        campoOF.focus();
 
         return;
 
     }
 
-
-    // Solo números
+    //==================================
+    // VALIDAR QUE SEA NUMÉRICA
+    //==================================
 
     if (!/^\d+$/.test(of)) {
 
         document.getElementById("resultado").innerHTML =
-
             "⚠️ La OF debe contener solamente números.";
 
-        document.getElementById("ofManual").focus();
+        campoOF.focus();
 
         return;
 
     }
 
+    //==================================
+    // OCULTAR FORMULARIO
+    //==================================
 
-    document.getElementById("formularioOF")
+    const formulario =
+        document.getElementById("formularioOF");
 
-        .style.display = "none";
+    if (formulario) {
 
+        formulario.style.display = "none";
+
+    }
+
+    //==================================
+    // EJECUTAR SALIDA
+    //==================================
 
     ejecutarMarcacion("Salida", of);
 
 }
-
-
-//======================================
-// CANCELAR SALIDA
-//======================================
-
-function cancelarSalida() {
-
-
-    document.getElementById("formularioOF")
-
-        .style.display = "none";
-
-
-    document.getElementById("ofManual").value = "";
-
-
-    document.getElementById("btnEntrada")
-
-        .disabled = false;
-
-
-    document.getElementById("btnSalida")
-
-        .disabled = false;
-
-
-    document.getElementById("resultado").innerHTML =
-
-        "Registro de salida cancelado.";
-
-
-}
-
 
 //======================================
 // EJECUTAR MARCACIÓN
@@ -521,9 +425,16 @@ function cancelarSalida() {
 
 function ejecutarMarcacion(tipo, of) {
 
+    if (trabajadorActual === null) {
+
+        document.getElementById("resultado").innerHTML =
+            "⚠️ Primero identifique al trabajador.";
+
+        return;
+
+    }
 
     const ahora = new Date();
-
 
     const datos = {
 
@@ -539,34 +450,30 @@ function ejecutarMarcacion(tipo, of) {
 
     };
 
-
     document.getElementById("resultado").innerHTML =
-
         "📍 Validando ubicación...";
 
+    document.getElementById("btnEntrada").disabled =
+        true;
 
-    document.getElementById("btnEntrada").disabled = true;
-
-    document.getElementById("btnSalida").disabled = true;
-
+    document.getElementById("btnSalida").disabled =
+        true;
 
     validarUbicacion()
 
         .then(permitido => {
 
-
             if (!permitido) {
 
+                document.getElementById("btnEntrada").disabled =
+                    false;
 
-                document.getElementById("btnEntrada").disabled = false;
-
-                document.getElementById("btnSalida").disabled = false;
-
+                document.getElementById("btnSalida").disabled =
+                    false;
 
                 return;
 
             }
-
 
             enviarRegistro(datos);
 
@@ -574,35 +481,22 @@ function ejecutarMarcacion(tipo, of) {
 
 }
 
-
 //======================================
 // VALIDAR UBICACIÓN GPS
 //======================================
 
 function validarUbicacion() {
 
-
     return new Promise((resolve) => {
-
-
-        //==================================
-        // MODO PRUEBA
-        //==================================
 
         if (MODO_PRUEBA === true) {
 
-
             console.log(
-
                 "🧪 MODO PRUEBA ACTIVO - GPS OMITIDO"
-
             );
 
-
             document.getElementById("resultado").innerHTML =
-
                 "🧪 Modo prueba activo.<br>Validación GPS omitida.";
-
 
             resolve(true);
 
@@ -610,18 +504,10 @@ function validarUbicacion() {
 
         }
 
-
-        //==================================
-        // MODO REAL
-        //==================================
-
         if (!navigator.geolocation) {
 
-
             document.getElementById("resultado").innerHTML =
-
                 "❌ Ubicación no disponible.";
-
 
             resolve(false);
 
@@ -629,93 +515,59 @@ function validarUbicacion() {
 
         }
 
-
         navigator.geolocation.getCurrentPosition(
-
 
             posicion => {
 
-
-                const distancia = calcularDistancia(
-
-                    posicion.coords.latitude,
-
-                    posicion.coords.longitude,
-
-                    UBICACION_PLANTA.lat,
-
-                    UBICACION_PLANTA.lng
-
-                );
-
+                const distancia =
+                    calcularDistancia(
+                        posicion.coords.latitude,
+                        posicion.coords.longitude,
+                        UBICACION_PLANTA.lat,
+                        UBICACION_PLANTA.lng
+                    );
 
                 console.log(
-
                     "Distancia planta:",
-
                     Math.round(distancia),
-
                     "metros"
-
                 );
-
 
                 if (distancia <= RADIO_PERMITIDO) {
 
-
                     resolve(true);
 
-
                 }
-
                 else {
 
-
                     document.getElementById("resultado").innerHTML =
-
                         "❌ Fuera de zona autorizada.<br>" +
-
                         "Distancia: " +
-
                         Math.round(distancia) +
-
                         " metros";
-
 
                     resolve(false);
 
                 }
 
-
             },
-
 
             error => {
 
-
                 console.log(error);
 
-
                 document.getElementById("resultado").innerHTML =
-
                     "⚠️ Active la ubicación para marcar asistencia.";
-
 
                 resolve(false);
 
             },
 
-
             {
-
                 enableHighAccuracy: true,
-
                 timeout: 10000,
-
                 maximumAge: 0
-
             }
-
 
         );
 
@@ -723,71 +575,55 @@ function validarUbicacion() {
 
 }
 
-
 //======================================
 // CALCULAR DISTANCIA
 //======================================
 
-function calcularDistancia(lat1, lon1, lat2, lon2) {
-
+function calcularDistancia(
+    lat1,
+    lon1,
+    lat2,
+    lon2
+) {
 
     const R = 6371000;
 
-
     const dLat =
-
-        (lat2 - lat1) * Math.PI / 180;
-
+        (lat2 - lat1) *
+        Math.PI /
+        180;
 
     const dLon =
-
-        (lon2 - lon1) * Math.PI / 180;
-
+        (lon2 - lon1) *
+        Math.PI /
+        180;
 
     const a =
-
         Math.sin(dLat / 2) *
-
         Math.sin(dLat / 2)
-
-
         +
-
-
         Math.cos(lat1 * Math.PI / 180)
-
-
         *
-
-
         Math.cos(lat2 * Math.PI / 180)
-
-
         *
-
-
-        Math.sin(dLon / 2) *
-
+        Math.sin(dLon / 2)
+        *
         Math.sin(dLon / 2);
 
-
-    return R * 2 * Math.atan2(
-
-        Math.sqrt(a),
-
-        Math.sqrt(1 - a)
-
-    );
+    return R *
+        2 *
+        Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1 - a)
+        );
 
 }
-
 
 //======================================
 // ENVIAR REGISTRO A APPS SCRIPT
 //======================================
 
 function enviarRegistro(datos) {
-
 
     fetch(URL_SCRIPT, {
 
@@ -797,71 +633,56 @@ function enviarRegistro(datos) {
 
     })
 
+    .then(respuesta =>
+        respuesta.json()
+    )
 
-        .then(respuesta => respuesta.json())
+    .then(resultado => {
 
+        console.log(
+            "Respuesta registro:",
+            resultado
+        );
 
-        .then(resultado => {
-
-
-            console.log(
-
-                "Respuesta registro:",
-
-                resultado
-
-            );
-
-
-            if (resultado.permitido === false) {
-
-
-                document.getElementById("resultado").innerHTML =
-
-                    "⚠️ " + resultado.mensaje;
-
-
-                document.getElementById("btnEntrada").disabled = false;
-
-                document.getElementById("btnSalida").disabled = false;
-
-
-                return;
-
-            }
-
+        if (resultado.permitido === false) {
 
             document.getElementById("resultado").innerHTML =
+                "⚠️ " + resultado.mensaje;
 
-                "✅ Registro realizado correctamente.<br>" +
+            document.getElementById("btnEntrada").disabled =
+                false;
 
-                trabajadorActual.nombre;
+            document.getElementById("btnSalida").disabled =
+                false;
 
+            return;
 
-            limpiarPantalla();
+        }
 
-        })
+        document.getElementById("resultado").innerHTML =
+            "✅ Registro realizado correctamente.<br>" +
+            trabajadorActual.nombre;
 
+        limpiarPantalla();
 
-        .catch(error => {
+    })
 
+    .catch(error => {
 
-            console.log(error);
+        console.log(error);
 
+        document.getElementById("resultado").innerHTML =
+            "❌ Error al registrar.";
 
-            document.getElementById("resultado").innerHTML =
+        document.getElementById("btnEntrada").disabled =
+            false;
 
-                "❌ Error al registrar.";
+        document.getElementById("btnSalida").disabled =
+            false;
 
-
-            document.getElementById("btnEntrada").disabled = false;
-
-            document.getElementById("btnSalida").disabled = false;
-
-        });
+    });
 
 }
-
 
 //======================================
 // DETENER CÁMARA
@@ -869,28 +690,20 @@ function enviarRegistro(datos) {
 
 function detenerScanner() {
 
-
     if (html5QrCode) {
-
 
         html5QrCode.stop()
 
-
             .then(() => {
-
 
                 html5QrCode.clear();
 
                 scannerActivo = false;
 
-
-                document.getElementById("reader")
-
-                    .style.display = "none";
-
+                document.getElementById("reader").style.display =
+                    "none";
 
             })
-
 
             .catch(error => {
 
@@ -902,61 +715,49 @@ function detenerScanner() {
 
 }
 
-
 //======================================
 // LIMPIAR PANTALLA
 //======================================
 
 function limpiarPantalla() {
 
-
     setTimeout(() => {
-
 
         trabajadorActual = null;
 
+        document.getElementById("trabajador").style.display =
+            "none";
 
-        document.getElementById("trabajador")
+        document.getElementById("btnEntrada").disabled =
+            true;
 
-            .style.display = "none";
+        document.getElementById("btnSalida").disabled =
+            true;
 
+        document.getElementById("rutManual").value =
+            "";
 
-        document.getElementById("btnEntrada")
+        const campoOF =
+            document.getElementById("ofManual");
 
-            .disabled = true;
+        if (campoOF) {
 
+            campoOF.value = "";
 
-        document.getElementById("btnSalida")
+        }
 
-            .disabled = true;
+        const formulario =
+            document.getElementById("formularioOF");
 
+        if (formulario) {
 
-        document.getElementById("rutManual")
+            formulario.style.display = "none";
 
-            .value = "";
+        }
 
-
-        document.getElementById("ofManual")
-
-            .value = "";
-
-
-        document.getElementById("formularioOF")
-
-            .style.display = "none";
-
-
-        document.getElementById("resultado")
-
-            .innerHTML = "";
-
+        document.getElementById("resultado").innerHTML =
+            "";
 
     }, 5000);
 
 }
-
-
-//======================================
-// FIN APP.JS
-//======================================
-```
