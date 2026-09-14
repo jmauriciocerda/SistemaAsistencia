@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 
@@ -8,7 +9,7 @@
 
     <title>Control de Asistencia Lecaros SPA</title>
 
-    <link rel="stylesheet" href="css/styles.css?v=2">
+    <link rel="stylesheet" href="css/styles.css?v=3">
 
 </head>
 
@@ -55,9 +56,7 @@
         <!-- LECTOR QR -->
         <!-- ========================= -->
 
-
         <div class="scanner-container">
-
 
             <button
                 id="btnScan"
@@ -68,9 +67,7 @@
             </button>
 
 
-
             <div id="reader"></div>
-
 
 
             <p class="scanner-text">
@@ -79,9 +76,7 @@
 
             </p>
 
-
         </div>
-
 
 
 
@@ -89,12 +84,10 @@
         <!-- INGRESO MANUAL -->
         <!-- ========================= -->
 
-
         <hr class="separador">
 
 
         <div class="manual-login">
-
 
             <p class="manual-title">
 
@@ -103,12 +96,10 @@
             </p>
 
 
-
             <input
                 type="text"
                 id="rutManual"
                 placeholder="Ingrese su RUT">
-
 
 
             <button
@@ -120,9 +111,7 @@
 
             </button>
 
-
         </div>
-
 
 
 
@@ -130,20 +119,15 @@
         <!-- DATOS TRABAJADOR -->
         <!-- ========================= -->
 
-
         <div
             id="trabajador"
             class="trabajador oculto">
 
-
             <h3 id="nombreTrabajador"></h3>
-
 
             <p id="cargoTrabajador"></p>
 
-
         </div>
-
 
 
 
@@ -151,9 +135,7 @@
         <!-- BOTONES -->
         <!-- ========================= -->
 
-
         <div class="botones">
-
 
             <button
                 id="btnEntrada"
@@ -166,7 +148,6 @@
             </button>
 
 
-
             <button
                 id="btnSalida"
                 class="salida"
@@ -177,9 +158,58 @@
 
             </button>
 
-
         </div>
 
+
+
+        <!-- ========================= -->
+        <!-- FORMULARIO OF -->
+        <!-- ========================= -->
+
+        <div
+            id="formularioOF"
+            class="formulario-of"
+            style="display:none;">
+
+            <h3>Registrar salida</h3>
+
+            <p>
+                Ingrese el número de OF en la que trabajó:
+            </p>
+
+
+            <input
+                type="text"
+                id="ofManual"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Número de OF">
+
+
+            <div class="botones-of">
+
+                <button
+                    type="button"
+                    class="entrada"
+                    onclick="confirmarSalida()">
+
+                    ✓ Confirmar salida
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="salida"
+                    onclick="cancelarSalida()">
+
+                    ✕ Cancelar
+
+                </button>
+
+            </div>
+
+        </div>
 
 
 
@@ -190,7 +220,6 @@
             class="resultado">
 
         </div>
-
 
 
     </main>
@@ -209,7 +238,6 @@
 
 
 
-
 <!-- ========================= -->
 <!-- LIBRERÍA LECTOR QR -->
 <!-- ========================= -->
@@ -222,10 +250,10 @@
 <!-- APLICACIÓN -->
 <!-- ========================= -->
 
-<script src="js/app.js?v=3"></script>
-
+<script src="js/app.js?v=4"></script>
 
 
 </body>
 
 </html>
+```
