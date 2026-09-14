@@ -446,3 +446,152 @@ button:disabled{
     }
 
 }
+/*==========================
+      FORMULARIO OF
+===========================*/
+
+#formularioOF{
+
+    display:none;
+
+    margin-top:20px;
+
+    padding:22px;
+
+    background:#ffffff;
+
+    border:2px solid #90CAF9;
+
+    border-radius:16px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.10);
+
+}
+
+#formularioOF h3{
+
+    margin:0 0 8px 0;
+
+    color:#1565C0;
+
+    font-size:21px;
+
+    font-weight:700;
+
+    text-align:center;
+
+}
+
+#formularioOF p{
+
+    margin:0 0 15px 0;
+
+    color:#666;
+
+    font-size:14px;
+
+    line-height:1.4;
+
+    text-align:center;
+
+}
+
+#formularioOF label{
+
+    display:block;
+
+    margin-bottom:7px;
+
+    color:#1565C0;
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    text-align:left;
+
+}
+
+#ofManual{
+
+    width:100%;
+
+    padding:14px;
+
+    border:2px solid #d8e7f5;
+
+    border-radius:12px;
+
+    background:#ffffff;
+
+    color:#333;
+
+    font-size:17px;
+
+    text-align:center;
+
+    outline:none;
+
+    transition:.25s;
+
+}
+
+#ofManual:focus{
+
+    border-color:#2196F3;
+
+    box-shadow:0 0 12px rgba(33,150,243,.20);
+
+}
+
+/* BOTONES DEL FORMULARIO OF */
+
+#formularioOF .botones{
+
+    margin-top:15px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+#formularioOF button{
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    font-size:16px;
+
+}
+
+/* CONFIRMAR */
+
+#formularioOF button:first-child{
+
+    background:linear-gradient(135deg,#24b04b,#16963b);
+
+}
+
+/* CANCELAR */
+
+#formularioOF button:last-child{
+
+    background:#e0e0e0;
+
+    color:#555;
+
+}
+
+#formularioOF button:last-child:hover{
+
+    background:#d5d5d5;
+
+    box-shadow:none;
+
+}
