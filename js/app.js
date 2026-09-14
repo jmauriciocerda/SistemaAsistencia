@@ -8,7 +8,7 @@ const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbzr3jgLZLJKl1ecUOKbb
 // CONFIGURACIÓN GEOLOCALIZACIÓN
 //======================================
 
-const MODO_PRUEBA = false;
+const MODO_PRUEBA = true;
 
 const UBICACION_PLANTA = {
     lat: -33.488593,
