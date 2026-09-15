@@ -63,7 +63,7 @@ function iniciarScanner() {
     html5QrCode =
         new Html5Qrcode("reader");
 
-    Html5QrCode.getCameras()
+    Html5Qrcode.getCameras()
         .then(function (cameras) {
 
             if (!cameras || cameras.length === 0) {
@@ -172,15 +172,11 @@ function onScanSuccess(
     );
 
 
-    // Evitar múltiples lecturas consecutivas
     scannerActivo = false;
 
 
-    // ==================================
-    // INTENTAR OBTENER ID DESDE URL
-    // ==================================
-
     let id = "";
+
 
     try {
 
@@ -200,11 +196,6 @@ function onScanSuccess(
 
     }
 
-
-    // ==================================
-    // SI NO SE OBTUVO ID,
-    // UTILIZAR EL TEXTO DIRECTAMENTE
-    // ==================================
 
     if (!id) {
 
@@ -245,7 +236,6 @@ function onScanSuccess(
 function onScanError(errorMessage) {
 
     // No mostrar errores normales del escáner.
-    // html5-qrcode genera muchos mientras busca un QR.
 
 }
 
@@ -335,10 +325,6 @@ function identificarTrabajador(
         URL_SCRIPT;
 
 
-    // ==================================
-    // CONSTRUIR CONSULTA
-    // ==================================
-
     if (
         tipoBusqueda === "ID"
     ) {
@@ -350,7 +336,6 @@ function identificarTrabajador(
             );
 
     }
-
 
     else if (
         tipoBusqueda === "RUT"
@@ -370,10 +355,6 @@ function identificarTrabajador(
         urlConsulta
     );
 
-
-    // ==================================
-    // MOSTRAR ESTADO
-    // ==================================
 
     mostrarMensaje(
         "Buscando trabajador...",
@@ -454,10 +435,6 @@ function identificarTrabajador(
         }
 
 
-        // ==================================
-        // ERROR DEL SERVIDOR
-        // ==================================
-
         if (datos.error) {
 
             mostrarMensaje(
@@ -474,10 +451,6 @@ function identificarTrabajador(
 
         }
 
-
-        // ==================================
-        // TRABAJADOR ENCONTRADO
-        // ==================================
 
         mostrarTrabajador(
             datos
@@ -529,10 +502,6 @@ function mostrarTrabajador(
     );
 
 
-    // ==================================
-    // NOMBRE
-    // ==================================
-
     const elementoNombre =
         document.getElementById(
             "nombreTrabajador"
@@ -546,10 +515,6 @@ function mostrarTrabajador(
 
     }
 
-
-    // ==================================
-    // RUT
-    // ==================================
 
     const elementoRut =
         document.getElementById(
@@ -565,10 +530,6 @@ function mostrarTrabajador(
     }
 
 
-    // ==================================
-    // MOSTRAR PANEL TRABAJADOR
-    // ==================================
-
     const trabajador =
         document.getElementById(
             "trabajador"
@@ -583,10 +544,6 @@ function mostrarTrabajador(
     }
 
 
-    // ==================================
-    // OCULTAR MENSAJE DE BÚSQUEDA
-    // ==================================
-
     const mensaje =
         document.getElementById(
             "mensaje"
@@ -598,12 +555,11 @@ function mostrarTrabajador(
         mensaje.textContent =
             "";
 
+        mensaje.className =
+            "";
+
     }
 
-
-    // ==================================
-    // ACTIVAR BOTONES
-    // ==================================
 
     const botonEntrada =
         document.getElementById(
@@ -659,10 +615,6 @@ function marcar(tipo) {
     );
 
 
-    // ==================================
-    // ENTRADA
-    // ==================================
-
     if (
         tipo === "Entrada"
     ) {
@@ -675,10 +627,6 @@ function marcar(tipo) {
 
     }
 
-
-    // ==================================
-    // SALIDA
-    // ==================================
 
     if (
         tipo === "Salida"
@@ -715,10 +663,6 @@ function ejecutarMarcacion(
     }
 
 
-    // ==================================
-    // FECHA Y HORA
-    // ==================================
-
     const ahora =
         new Date();
 
@@ -750,10 +694,6 @@ function ejecutarMarcacion(
     );
 
 
-    // ==================================
-    // VALIDAR UBICACIÓN
-    // ==================================
-
     validarUbicacion(
         function () {
 
@@ -775,10 +715,6 @@ function validarUbicacion(
     callback
 ) {
 
-    // ==================================
-    // MODO PRUEBA
-    // ==================================
-
     if (MODO_PRUEBA) {
 
         console.log(
@@ -791,10 +727,6 @@ function validarUbicacion(
 
     }
 
-
-    // ==================================
-    // VERIFICAR SOPORTE
-    // ==================================
 
     if (
         !navigator.geolocation
@@ -825,13 +757,6 @@ function validarUbicacion(
 
             const lng =
                 position.coords.longitude;
-
-
-            console.log(
-                "Ubicación actual:",
-                lat,
-                lng
-            );
 
 
             const distancia =
@@ -1063,6 +988,7 @@ function enviarRegistro(
             respuesta.permitido === true
         ) {
 
+            // Mostrar mensaje de éxito
             mostrarMensaje(
                 "¡" +
                 datos.tipo +
@@ -1071,7 +997,47 @@ function enviarRegistro(
             );
 
 
-            limpiarTrabajador();
+            // Desactivar botones
+            const botonEntrada =
+                document.getElementById(
+                    "btnEntrada"
+                );
+
+
+            const botonSalida =
+                document.getElementById(
+                    "btnSalida"
+                );
+
+
+            if (botonEntrada) {
+
+                botonEntrada.disabled =
+                    true;
+
+            }
+
+
+            if (botonSalida) {
+
+                botonSalida.disabled =
+                    true;
+
+            }
+
+
+            // IMPORTANTE:
+            // No limpiar inmediatamente el mensaje.
+            // Primero dejamos que el usuario lo vea.
+
+            setTimeout(
+                function () {
+
+                    limpiarTrabajador();
+
+                },
+                2500
+            );
 
 
             return;
@@ -1126,10 +1092,6 @@ function limpiarTrabajador() {
         null;
 
 
-    // ==================================
-    // OCULTAR INFORMACIÓN
-    // ==================================
-
     const trabajador =
         document.getElementById(
             "trabajador"
@@ -1143,10 +1105,6 @@ function limpiarTrabajador() {
 
     }
 
-
-    // ==================================
-    // LIMPIAR NOMBRE
-    // ==================================
 
     const nombre =
         document.getElementById(
@@ -1162,10 +1120,6 @@ function limpiarTrabajador() {
     }
 
 
-    // ==================================
-    // LIMPIAR RUT
-    // ==================================
-
     const rut =
         document.getElementById(
             "rutTrabajador"
@@ -1180,10 +1134,6 @@ function limpiarTrabajador() {
     }
 
 
-    // ==================================
-    // LIMPIAR RUT MANUAL
-    // ==================================
-
     const rutManual =
         document.getElementById(
             "rutManual"
@@ -1197,10 +1147,6 @@ function limpiarTrabajador() {
 
     }
 
-
-    // ==================================
-    // DESACTIVAR BOTONES
-    // ==================================
 
     const botonEntrada =
         document.getElementById(
@@ -1229,10 +1175,6 @@ function limpiarTrabajador() {
 
     }
 
-
-    // ==================================
-    // REACTIVAR ESCÁNER
-    // ==================================
 
     reactivarScanner();
 
@@ -1299,5 +1241,13 @@ function mostrarMensaje(
         );
 
     }
+
+
+    console.log(
+        "Mensaje:",
+        mensaje,
+        "Tipo:",
+        tipo
+    );
 
 }
