@@ -16,7 +16,7 @@ const URL_SCRIPT =
 // CONFIGURACIÓN GEOLOCALIZACIÓN
 // ======================================
 
-const MODO_PRUEBA = true;
+const MODO_PRUEBA = false;
 
 const UBICACION_PLANTA = {
     lat: -33.488593,
