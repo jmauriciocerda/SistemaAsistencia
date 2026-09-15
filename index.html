@@ -14,7 +14,7 @@
 
     <link
         rel="stylesheet"
-        href="css/styles.css?v=5"
+        href="css/styles.css?v=6"
     >
 
 </head>
@@ -53,7 +53,9 @@
 
     <main class="card">
 
-        <!-- FECHA Y HORA -->
+        <!-- ======================================
+             FECHA Y HORA
+             ====================================== -->
 
         <div
             id="fechaHora"
@@ -70,6 +72,7 @@
             <button
                 id="btnScan"
                 class="scan-btn"
+                type="button"
             >
                 📷 Escanear credencial
             </button>
@@ -106,6 +109,7 @@
             <button
                 id="btnRut"
                 class="scan-btn"
+                type="button"
                 onclick="buscarPorRut()"
             >
                 Buscar trabajador
@@ -139,6 +143,7 @@
             <button
                 id="btnEntrada"
                 class="entrada"
+                type="button"
                 onclick="marcar('Entrada')"
                 disabled
             >
@@ -148,6 +153,7 @@
             <button
                 id="btnSalida"
                 class="salida"
+                type="button"
                 onclick="marcar('Salida')"
                 disabled
             >
@@ -158,84 +164,15 @@
 
 
         <!-- ======================================
-             RESULTADO / MENSAJES
+             MENSAJES DEL SISTEMA
              ====================================== -->
 
         <div
-            id="resultado"
+            id="mensaje"
             class="resultado"
         ></div>
 
     </main>
-
-
-    <!-- ==========================================
-         VENTANA INGRESO DE OF
-         ========================================== -->
-
-    <div
-        id="formularioOF"
-        class="modal-overlay"
-        style="display:none;"
-    >
-
-        <div class="modal-of">
-
-            <div class="modal-of-icon">
-                🔴
-            </div>
-
-            <h3>
-                Registrar salida
-            </h3>
-
-            <p
-                class="modal-of-trabajador"
-                id="nombreOFTrabajador"
-            ></p>
-
-            <div class="modal-of-separador"></div>
-
-            <label for="ofManual">
-                Orden de Fabricación
-            </label>
-
-            <p class="modal-of-ayuda">
-                Ingrese la OF en la que trabajó durante su jornada.
-            </p>
-
-            <input
-                type="number"
-                id="ofManual"
-                class="input-of"
-                placeholder="Ingrese número de OF"
-                inputmode="numeric"
-                autocomplete="off"
-            >
-
-            <div class="modal-of-botones">
-
-                <button
-                    type="button"
-                    class="btn-confirmar-of"
-                    onclick="confirmarSalida()"
-                >
-                    ✓ Confirmar salida
-                </button>
-
-                <button
-                    type="button"
-                    class="btn-cancelar-of"
-                    onclick="cancelarSalida()"
-                >
-                    Cancelar
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
 
 
     <!-- ==========================================
@@ -262,7 +199,7 @@
      JAVASCRIPT DEL SISTEMA
      ========================================== -->
 
-<script src="js/app.js?v=5"></script>
+<script src="js/app.js?v=8"></script>
 
 </body>
 
