@@ -1,8 +1,15 @@
 // ======================================
+// SISTEMA DE ASISTENCIA
+// LECAROS SPA
+// ======================================
+
+
+// ======================================
 // CONFIGURACIÓN
 // ======================================
 
-const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbz2IrHZN78V8D9iAYytpLsk1fx4JUPc6NAtRDjZ45usOvy1ZmIqfV33erjsu_FA0lSO/exec";
+const URL_SCRIPT =
+    "https://script.google.com/macros/s/AKfycbz2IrHZN78V8D9iAYytpLsk1fx4JUPc6NAtRDjZ45usOvy1ZmIqfV33erjsu_FA0lSO/exec";
 
 
 // ======================================
@@ -24,146 +31,274 @@ const RADIO_PERMITIDO = 500;
 // ======================================
 
 let html5QrCode = null;
+
 let scannerActivo = false;
+
 let trabajadorActual = null;
+
+let marcando = false;
 
 
 // ======================================
 // INICIO
 // ======================================
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    console.log("Sistema de asistencia iniciado.");
+        actualizarFechaHora();
 
-    iniciarScanner();
+        setInterval(
+            actualizarFechaHora,
+            1000
+        );
 
-});
+        configurarScanner();
+
+    }
+);
 
 
 // ======================================
-// INICIAR ESCÁNER QR
+// FECHA Y HORA
 // ======================================
 
-function iniciarScanner() {
+function actualizarFechaHora() {
 
-    const elementoScanner =
-        document.getElementById("reader");
+    const elemento =
+        document.getElementById(
+            "fechaHora"
+        );
 
-    if (!elementoScanner) {
+    if (!elemento) {
+        return;
+    }
 
-        console.error(
-            "No se encontró el elemento #reader."
+    const ahora =
+        new Date();
+
+    const opcionesFecha = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    };
+
+    const fecha =
+        ahora.toLocaleDateString(
+            "es-CL",
+            opcionesFecha
+        );
+
+    const hora =
+        ahora.toLocaleTimeString(
+            "es-CL",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        );
+
+    elemento.innerHTML =
+        fecha.charAt(0).toUpperCase() +
+        fecha.slice(1) +
+        "<br>" +
+        hora;
+
+}
+
+
+// ======================================
+// CONFIGURAR BOTÓN SCANNER
+// ======================================
+
+function configurarScanner() {
+
+    const boton =
+        document.getElementById(
+            "btnScan"
+        );
+
+    if (!boton) {
+        return;
+    }
+
+    boton.addEventListener(
+        "click",
+        function () {
+
+            if (scannerActivo) {
+
+                detenerScanner();
+
+            } else {
+
+                iniciarScanner();
+
+            }
+
+        }
+    );
+
+}
+
+
+// ======================================
+// INICIAR SCANNER QR
+// ======================================
+
+async function iniciarScanner() {
+
+    const reader =
+        document.getElementById(
+            "reader"
+        );
+
+    if (!reader) {
+        return;
+    }
+
+    if (
+        typeof Html5Qrcode ===
+        "undefined"
+    ) {
+
+        mostrarMensaje(
+            "No se pudo cargar el lector QR.",
+            "error"
         );
 
         return;
 
     }
 
-    html5QrCode =
-        new Html5Qrcode("reader");
+    try {
 
-    Html5Qrcode.getCameras()
-        .then(function (cameras) {
-
-            if (!cameras || cameras.length === 0) {
-
-                mostrarMensaje(
-                    "No se encontró ninguna cámara.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-            const camara =
-                cameras.find(function (camera) {
-
-                    return camera.label
-                        .toLowerCase()
-                        .includes("back");
-
-                }) || cameras[0];
-
-            iniciarCamara(camara.id);
-
-        })
-        .catch(function (error) {
-
-            console.error(
-                "Error obteniendo cámaras:",
-                error
+        html5QrCode =
+            new Html5Qrcode(
+                "reader"
             );
 
+        const cameras =
+            await Html5Qrcode.getCameras();
+
+        if (
+            !cameras ||
+            cameras.length === 0
+        ) {
+
             mostrarMensaje(
-                "No fue posible acceder a la cámara.",
+                "No se encontró una cámara disponible.",
                 "error"
             );
 
-        });
+            return;
 
-}
+        }
 
+        let cameraId =
+            cameras[0].id;
 
-// ======================================
-// ACTIVAR CÁMARA
-// ======================================
+        const camaraTrasera =
+            cameras.find(
+                camera =>
+                    camera.label &&
+                    (
+                        camera.label
+                            .toLowerCase()
+                            .includes("back") ||
+                        camera.label
+                            .toLowerCase()
+                            .includes("trasera") ||
+                        camera.label
+                            .toLowerCase()
+                            .includes("environment")
+                    )
+            );
 
-function iniciarCamara(cameraId) {
+        if (camaraTrasera) {
 
-    html5QrCode
-        .start(
+            cameraId =
+                camaraTrasera.id;
+
+        }
+
+        await html5QrCode.start(
+
             cameraId,
+
             {
                 fps: 10,
+
                 qrbox: {
                     width: 220,
                     height: 220
                 }
+
             },
+
             onScanSuccess,
+
             onScanError
-        )
-        .then(function () {
 
-            scannerActivo = true;
+        );
 
-            console.log(
-                "Escáner QR iniciado."
+        scannerActivo = true;
+
+        const boton =
+            document.getElementById(
+                "btnScan"
             );
 
-        })
-        .catch(function (error) {
+        if (boton) {
 
-            console.error(
-                "Error iniciando escáner:",
-                error
-            );
+            boton.innerHTML =
+                "⛔ Detener lector";
 
-            mostrarMensaje(
-                "No fue posible iniciar la cámara.",
-                "error"
-            );
+        }
 
-        });
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error iniciando scanner:",
+            error
+        );
+
+        mostrarMensaje(
+            "No fue posible iniciar la cámara.",
+            "error"
+        );
+
+    }
 
 }
 
 
 // ======================================
-// RESULTADO ESCANEO QR
+// ERROR DE LECTURA QR
 // ======================================
 
-function onScanSuccess(
-    decodedText,
-    decodedResult
-) {
+function onScanError(errorMessage) {
 
-    if (!scannerActivo) {
+    // Se ignoran los errores normales
+    // producidos mientras el scanner busca
+    // un código QR.
 
+}
+
+
+// ======================================
+// QR ENCONTRADO
+// ======================================
+
+async function onScanSuccess(decodedText) {
+
+    if (!decodedText) {
         return;
-
     }
 
     console.log(
@@ -171,71 +306,141 @@ function onScanSuccess(
         decodedText
     );
 
+    await detenerScanner();
 
-    scannerActivo = false;
-
-
-    let id = "";
-
-
-    try {
-
-        const url =
-            new URL(decodedText);
-
-        id =
-            url.searchParams.get("ID") || "";
-
-    }
-
-    catch (error) {
-
-        console.log(
-            "El QR no contiene una URL válida."
-        );
-
-    }
-
-
-    if (!id) {
-
-        id =
-            decodeURIComponent(
-                decodedText
-            ).trim();
-
-    }
-
-
-    if (!id) {
-
-        mostrarMensaje(
-            "El código QR no contiene un ID válido.",
-            "error"
-        );
-
-        reactivarScanner();
-
-        return;
-
-    }
-
-
-    identificarTrabajador(
-        "ID",
-        id
+    procesarQR(
+        decodedText
     );
 
 }
 
 
 // ======================================
-// ERROR DE ESCANEO
+// PROCESAR QR
 // ======================================
 
-function onScanError(errorMessage) {
+async function procesarQR(urlQR) {
 
-    // No mostrar errores normales del escáner.
+    try {
+
+        let id = null;
+
+        try {
+
+            const url =
+                new URL(
+                    urlQR
+                );
+
+            id =
+                url.searchParams.get(
+                    "ID"
+                );
+
+        }
+
+        catch (error) {
+
+            console.log(
+                "El contenido QR no es una URL válida."
+            );
+
+        }
+
+
+        // ==================================
+        // SI EL QR ES DIRECTAMENTE UN ID
+        // ==================================
+
+        if (!id) {
+
+            id =
+                urlQR
+                    .toString()
+                    .trim();
+
+        }
+
+
+        if (!id) {
+
+            mostrarMensaje(
+                "El código QR no contiene un ID válido.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        mostrarMensaje(
+            "Buscando trabajador...",
+            "info"
+        );
+
+
+        const respuesta =
+            await fetch(
+                URL_SCRIPT +
+                "?ID=" +
+                encodeURIComponent(id)
+            );
+
+
+        if (!respuesta.ok) {
+
+            throw new Error(
+                "Error de comunicación con el servidor."
+            );
+
+        }
+
+
+        const datos =
+            await respuesta.json();
+
+
+        console.log(
+            "Respuesta QR:",
+            datos
+        );
+
+
+        if (
+            !datos ||
+            datos.error
+        ) {
+
+            mostrarMensaje(
+                "Trabajador no encontrado.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        cargarTrabajador(
+            datos
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error procesando QR:",
+            error
+        );
+
+        mostrarMensaje(
+            "No fue posible consultar el trabajador.",
+            "error"
+        );
+
+    }
 
 }
 
@@ -244,28 +449,21 @@ function onScanError(errorMessage) {
 // BUSCAR TRABAJADOR POR RUT
 // ======================================
 
-function buscarPorRut() {
+async function buscarPorRut() {
 
-    const campo =
+    const input =
         document.getElementById(
             "rutManual"
         );
 
-
-    if (!campo) {
-
-        console.error(
-            "No se encontró #rutManual."
-        );
-
+    if (!input) {
         return;
-
     }
 
 
     const rut =
-        normalizarRut(
-            campo.value
+        limpiarRut(
+            input.value
         );
 
 
@@ -281,31 +479,123 @@ function buscarPorRut() {
     }
 
 
-    console.log(
-        "Buscando RUT:",
-        rut
+    mostrarMensaje(
+        "Buscando trabajador...",
+        "info"
     );
 
 
-    identificarTrabajador(
-        "RUT",
-        rut
-    );
+    const boton =
+        document.getElementById(
+            "btnRut"
+        );
+
+    if (boton) {
+
+        boton.disabled = true;
+
+    }
+
+
+    try {
+
+        const respuesta =
+            await fetch(
+                URL_SCRIPT +
+                "?RUT=" +
+                encodeURIComponent(rut)
+            );
+
+
+        if (!respuesta.ok) {
+
+            throw new Error(
+                "Error de comunicación con el servidor."
+            );
+
+        }
+
+
+        const datos =
+            await respuesta.json();
+
+
+        console.log(
+            "Respuesta RUT:",
+            datos
+        );
+
+
+        if (
+            !datos ||
+            datos.error
+        ) {
+
+            mostrarMensaje(
+                "Trabajador no encontrado.",
+                "error"
+            );
+
+            limpiarTrabajador();
+
+            return;
+
+        }
+
+
+        cargarTrabajador(
+            datos
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error buscando RUT:",
+            error
+        );
+
+        mostrarMensaje(
+            "No fue posible consultar el trabajador.",
+            "error"
+        );
+
+    }
+
+    finally {
+
+        if (boton) {
+
+            boton.disabled = false;
+
+        }
+
+    }
 
 }
 
 
 // ======================================
-// NORMALIZAR RUT
+// LIMPIAR RUT
 // ======================================
 
-function normalizarRut(rut) {
+function limpiarRut(rut) {
 
     return rut
         .toString()
-        .replace(/\./g, "")
-        .replace(/-/g, "")
-        .replace(/\s/g, "")
+        .replace(
+            /\./g,
+            ""
+        )
+        .replace(
+            /-/g,
+            ""
+        )
+        .replace(
+            /\s/g,
+            ""
+        )
         .trim()
         .toUpperCase();
 
@@ -313,221 +603,13 @@ function normalizarRut(rut) {
 
 
 // ======================================
-// IDENTIFICAR TRABAJADOR
+// CARGAR TRABAJADOR
 // ======================================
 
-function identificarTrabajador(
-    tipoBusqueda,
-    valor
-) {
-
-    let urlConsulta =
-        URL_SCRIPT;
-
-
-    if (
-        tipoBusqueda === "ID"
-    ) {
-
-        urlConsulta +=
-            "?ID=" +
-            encodeURIComponent(
-                valor
-            );
-
-    }
-
-    else if (
-        tipoBusqueda === "RUT"
-    ) {
-
-        urlConsulta +=
-            "?RUT=" +
-            encodeURIComponent(
-                valor
-            );
-
-    }
-
-
-    console.log(
-        "Consultando:",
-        urlConsulta
-    );
-
-
-    mostrarMensaje(
-        "Buscando trabajador...",
-        "info"
-    );
-
-
-    fetch(
-        urlConsulta,
-        {
-            method: "GET",
-            cache: "no-store",
-            redirect: "follow"
-        }
-    )
-
-    .then(function (respuesta) {
-
-        console.log(
-            "HTTP:",
-            respuesta.status,
-            respuesta.statusText
-        );
-
-        console.log(
-            "URL final:",
-            respuesta.url
-        );
-
-
-        return respuesta.text();
-
-    })
-
-    .then(function (texto) {
-
-        console.log(
-            "Respuesta recibida:",
-            texto
-        );
-
-
-        if (
-            !texto ||
-            texto.trim() === ""
-        ) {
-
-            throw new Error(
-                "El servidor no devolvió información."
-            );
-
-        }
-
-
-        let datos;
-
-
-        try {
-
-            datos =
-                JSON.parse(
-                    texto
-                );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Respuesta no JSON:",
-                texto
-            );
-
-            throw new Error(
-                "El servidor devolvió una respuesta que no es JSON."
-            );
-
-        }
-
-
-        if (datos.error) {
-
-            mostrarMensaje(
-                datos.error,
-                "error"
-            );
-
-            trabajadorActual =
-                null;
-
-            reactivarScanner();
-
-            return;
-
-        }
-
-
-        mostrarTrabajador(
-            datos
-        );
-
-    })
-
-    .catch(function (error) {
-
-        console.error(
-            "Error consultando trabajador:",
-            error
-        );
-
-
-        trabajadorActual =
-            null;
-
-
-        mostrarMensaje(
-            error.message ||
-            "No fue posible consultar al trabajador.",
-            "error"
-        );
-
-
-        reactivarScanner();
-
-    });
-
-}
-
-
-// ======================================
-// MOSTRAR TRABAJADOR
-// ======================================
-
-function mostrarTrabajador(
-    datos
-) {
+function cargarTrabajador(datos) {
 
     trabajadorActual =
         datos;
-
-
-    console.log(
-        "Trabajador identificado:",
-        datos
-    );
-
-
-    const elementoNombre =
-        document.getElementById(
-            "nombreTrabajador"
-        );
-
-
-    if (elementoNombre) {
-
-        elementoNombre.textContent =
-            datos.nombre || "";
-
-    }
-
-
-    const elementoRut =
-        document.getElementById(
-            "rutTrabajador"
-        );
-
-
-    if (elementoRut) {
-
-        elementoRut.textContent =
-            datos.rut || "";
-
-    }
 
 
     const trabajador =
@@ -535,56 +617,91 @@ function mostrarTrabajador(
             "trabajador"
         );
 
-
-    if (trabajador) {
-
-        trabajador.style.display =
-            "block";
-
-    }
-
-
-    const mensaje =
+    const nombre =
         document.getElementById(
-            "mensaje"
+            "nombreTrabajador"
+        );
+
+    const rut =
+        document.getElementById(
+            "cargoTrabajador"
         );
 
 
-    if (mensaje) {
+    if (nombre) {
 
-        mensaje.textContent =
-            "";
-
-        mensaje.className =
+        nombre.textContent =
+            datos.nombre ||
             "";
 
     }
 
 
-    const botonEntrada =
+    if (rut) {
+
+        if (datos.rut) {
+
+            rut.textContent =
+                "RUT: " +
+                datos.rut;
+
+        } else {
+
+            rut.textContent =
+                "";
+
+        }
+
+    }
+
+
+    if (trabajador) {
+
+        trabajador.classList.remove(
+            "oculto"
+        );
+
+    }
+
+
+    habilitarBotones();
+
+
+    mostrarMensaje(
+        "Trabajador identificado correctamente.",
+        "success"
+    );
+
+}
+
+
+// ======================================
+// HABILITAR ENTRADA / SALIDA
+// ======================================
+
+function habilitarBotones() {
+
+    const entrada =
         document.getElementById(
             "btnEntrada"
         );
 
-
-    const botonSalida =
+    const salida =
         document.getElementById(
             "btnSalida"
         );
 
 
-    if (botonEntrada) {
+    if (entrada) {
 
-        botonEntrada.disabled =
-            false;
+        entrada.disabled = false;
 
     }
 
 
-    if (botonSalida) {
+    if (salida) {
 
-        botonSalida.disabled =
-            false;
+        salida.disabled = false;
 
     }
 
@@ -596,6 +713,11 @@ function mostrarTrabajador(
 // ======================================
 
 function marcar(tipo) {
+
+    if (marcando) {
+        return;
+    }
+
 
     if (!trabajadorActual) {
 
@@ -609,119 +731,21 @@ function marcar(tipo) {
     }
 
 
-    console.log(
-        "Marcación solicitada:",
-        tipo
-    );
+    marcando = true;
 
 
-    if (
-        tipo === "Entrada"
-    ) {
-
-        ejecutarMarcacion(
-            "Entrada"
-        );
-
-        return;
-
-    }
+    deshabilitarBotones();
 
 
-    if (
-        tipo === "Salida"
-    ) {
-
-        ejecutarMarcacion(
-            "Salida"
-        );
-
-        return;
-
-    }
-
-}
-
-
-// ======================================
-// EJECUTAR MARCACIÓN
-// ======================================
-
-function ejecutarMarcacion(
-    tipo
-) {
-
-    if (!trabajadorActual) {
-
-        mostrarMensaje(
-            "No hay un trabajador identificado.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const ahora =
-        new Date();
-
-
-    const datos = {
-
-        nombre:
-            trabajadorActual.nombre,
-
-        tipo:
-            tipo,
-
-        fecha:
-            ahora.toLocaleDateString(
-                "es-CL"
-            ),
-
-        hora:
-            ahora.toLocaleTimeString(
-                "es-CL"
-            )
-
-    };
-
-
-    console.log(
-        "Datos de marcación:",
-        datos
-    );
-
-
-    validarUbicacion(
-        function () {
-
-            enviarRegistro(
-                datos
-            );
-
-        }
-    );
-
-}
-
-
-// ======================================
-// VALIDAR GEOLOCALIZACIÓN
-// ======================================
-
-function validarUbicacion(
-    callback
-) {
+    // ==================================
+    // OBTENER UBICACIÓN
+    // ==================================
 
     if (MODO_PRUEBA) {
 
-        console.log(
-            "MODO_PRUEBA activo. Se omite validación GPS."
+        registrarMarcacion(
+            tipo
         );
-
-        callback();
 
         return;
 
@@ -736,6 +760,10 @@ function validarUbicacion(
             "Este dispositivo no permite obtener la ubicación.",
             "error"
         );
+
+        marcando = false;
+
+        habilitarBotones();
 
         return;
 
@@ -784,16 +812,22 @@ function validarUbicacion(
             ) {
 
                 mostrarMensaje(
-                    "Se encuentra fuera del área permitida para marcar asistencia.",
+                    "No se encuentra dentro del área autorizada.",
                     "error"
                 );
+
+                marcando = false;
+
+                habilitarBotones();
 
                 return;
 
             }
 
 
-            callback();
+            registrarMarcacion(
+                tipo
+            );
 
         },
 
@@ -801,15 +835,20 @@ function validarUbicacion(
         function (error) {
 
             console.error(
-                "Error obteniendo ubicación:",
+                "Error de geolocalización:",
                 error
             );
 
 
             mostrarMensaje(
-                "No fue posible obtener su ubicación. Active el GPS y vuelva a intentar.",
+                "No fue posible obtener su ubicación.",
                 "error"
             );
+
+
+            marcando = false;
+
+            habilitarBotones();
 
         },
 
@@ -820,6 +859,263 @@ function validarUbicacion(
             maximumAge: 0
         }
 
+    );
+
+}
+
+
+// ======================================
+// REGISTRAR MARCACIÓN
+// ======================================
+
+async function registrarMarcacion(tipo) {
+
+    try {
+
+        const ahora =
+            new Date();
+
+
+        const fecha =
+            obtenerFecha(
+                ahora
+            );
+
+
+        const hora =
+            obtenerHora(
+                ahora
+            );
+
+
+        const datos = {
+
+            nombre:
+                trabajadorActual.nombre,
+
+            tipo:
+                tipo,
+
+            fecha:
+                fecha,
+
+            hora:
+                hora
+
+        };
+
+
+        console.log(
+            "Enviando marcación:",
+            datos
+        );
+
+
+        mostrarMensaje(
+            "Registrando " +
+            tipo.toLowerCase() +
+            "...",
+            "info"
+        );
+
+
+        const respuesta =
+            await fetch(
+
+                URL_SCRIPT,
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            datos
+                        )
+
+                }
+
+            );
+
+
+        if (!respuesta.ok) {
+
+            throw new Error(
+                "Error al enviar el registro."
+            );
+
+        }
+
+
+        const resultado =
+            await respuesta.json();
+
+
+        console.log(
+            "Respuesta registro:",
+            resultado
+        );
+
+
+        if (
+            !resultado.permitido
+        ) {
+
+            mostrarMensaje(
+                resultado.mensaje ||
+                "No fue posible registrar la marcación.",
+                "error"
+            );
+
+            marcando = false;
+
+            habilitarBotones();
+
+            return;
+
+        }
+
+
+        // ==================================
+        // MENSAJE DE ÉXITO
+        // ==================================
+
+        mostrarMensaje(
+
+            "¡" +
+            tipo +
+            " registrada correctamente!",
+
+            "success"
+
+        );
+
+
+        // ==================================
+        // MANTENER MENSAJE VISIBLE
+        // ==================================
+
+        setTimeout(
+
+            function () {
+
+                limpiarTrabajador();
+
+                marcando = false;
+
+            },
+
+            2500
+
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error registrando marcación:",
+            error
+        );
+
+
+        mostrarMensaje(
+            "No fue posible registrar la marcación.",
+            "error"
+        );
+
+
+        marcando = false;
+
+        habilitarBotones();
+
+    }
+
+}
+
+
+// ======================================
+// OBTENER FECHA
+// ======================================
+
+function obtenerFecha(fecha) {
+
+    const dia =
+        String(
+            fecha.getDate()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const mes =
+        String(
+            fecha.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const año =
+        fecha.getFullYear();
+
+
+    return (
+        dia +
+        "/" +
+        mes +
+        "/" +
+        año
+    );
+
+}
+
+
+// ======================================
+// OBTENER HORA
+// ======================================
+
+function obtenerHora(fecha) {
+
+    const horas =
+        String(
+            fecha.getHours()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const minutos =
+        String(
+            fecha.getMinutes()
+        ).padStart(
+            2,
+            "0"
+        );
+
+    const segundos =
+        String(
+            fecha.getSeconds()
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    return (
+        horas +
+        ":" +
+        minutos +
+        ":" +
+        segundos
     );
 
 }
@@ -841,16 +1137,23 @@ function calcularDistancia(
 
 
     const rad =
-        Math.PI / 180;
+        Math.PI /
+        180;
 
 
     const dLat =
-        (lat2 - lat1) *
+        (
+            lat2 -
+            lat1
+        ) *
         rad;
 
 
     const dLon =
-        (lon2 - lon1) *
+        (
+            lon2 -
+            lon1
+        ) *
         rad;
 
 
@@ -865,7 +1168,6 @@ function calcularDistancia(
         Math.cos(
             lat1 * rad
         ) *
-
         Math.cos(
             lat2 * rad
         ) *
@@ -892,192 +1194,103 @@ function calcularDistancia(
 
 
 // ======================================
-// ENVIAR REGISTRO
+// MOSTRAR MENSAJE
 // ======================================
 
-function enviarRegistro(
-    datos
+function mostrarMensaje(
+    texto,
+    tipo = "info"
 ) {
 
-    mostrarMensaje(
-        "Registrando asistencia...",
+    // ==================================
+    // IMPORTANTE:
+    // EL INDEX USA id="resultado"
+    // ==================================
+
+    const elemento =
+        document.getElementById(
+            "resultado"
+        );
+
+
+    if (!elemento) {
+
+        console.error(
+            "No existe el elemento #resultado en index.html"
+        );
+
+        return;
+
+    }
+
+
+    // ==================================
+    // LIMPIAR CLASES ANTERIORES
+    // ==================================
+
+    elemento.classList.remove(
+        "success",
+        "error",
         "info"
     );
 
 
-    fetch(
-        URL_SCRIPT,
-        {
-            method: "POST",
+    // ==================================
+    // ASIGNAR NUEVA CLASE
+    // ==================================
 
-            headers: {
-                "Content-Type":
-                    "text/plain;charset=utf-8"
-            },
+    elemento.classList.add(
+        tipo
+    );
 
-            body:
-                JSON.stringify(
-                    datos
-                )
-        }
-    )
 
-    .then(function (respuesta) {
+    // ==================================
+    // MOSTRAR TEXTO
+    // ==================================
 
-        console.log(
-            "HTTP registro:",
-            respuesta.status
+    elemento.textContent =
+        texto;
+
+
+    // ==================================
+    // ASEGURAR VISIBILIDAD
+    // ==================================
+
+    elemento.style.display =
+        "block";
+
+}
+
+
+// ======================================
+// DESHABILITAR BOTONES
+// ======================================
+
+function deshabilitarBotones() {
+
+    const entrada =
+        document.getElementById(
+            "btnEntrada"
+        );
+
+    const salida =
+        document.getElementById(
+            "btnSalida"
         );
 
 
-        return respuesta.text();
+    if (entrada) {
 
-    })
+        entrada.disabled = true;
 
-    .then(function (texto) {
-
-        console.log(
-            "Respuesta registro:",
-            texto
-        );
+    }
 
 
-        if (
-            !texto ||
-            texto.trim() === ""
-        ) {
+    if (salida) {
 
-            throw new Error(
-                "El servidor no devolvió una respuesta."
-            );
+        salida.disabled = true;
 
-        }
-
-
-        let respuesta;
-
-
-        try {
-
-            respuesta =
-                JSON.parse(
-                    texto
-                );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Respuesta no JSON:",
-                texto
-            );
-
-            throw new Error(
-                "El servidor devolvió una respuesta inválida."
-            );
-
-        }
-
-
-        // ==================================
-        // REGISTRO CORRECTO
-        // ==================================
-
-        if (
-            respuesta.permitido === true
-        ) {
-
-            // Mostrar mensaje de éxito
-            mostrarMensaje(
-                "¡" +
-                datos.tipo +
-                " registrada correctamente!",
-                "success"
-            );
-
-
-            // Desactivar botones
-            const botonEntrada =
-                document.getElementById(
-                    "btnEntrada"
-                );
-
-
-            const botonSalida =
-                document.getElementById(
-                    "btnSalida"
-                );
-
-
-            if (botonEntrada) {
-
-                botonEntrada.disabled =
-                    true;
-
-            }
-
-
-            if (botonSalida) {
-
-                botonSalida.disabled =
-                    true;
-
-            }
-
-
-            // IMPORTANTE:
-            // No limpiar inmediatamente el mensaje.
-            // Primero dejamos que el usuario lo vea.
-
-            setTimeout(
-                function () {
-
-                    limpiarTrabajador();
-
-                },
-                2500
-            );
-
-
-            return;
-
-        }
-
-
-        // ==================================
-        // REGISTRO RECHAZADO
-        // ==================================
-
-        mostrarMensaje(
-            respuesta.mensaje ||
-            "No fue posible registrar la asistencia.",
-            "error"
-        );
-
-
-        reactivarScanner();
-
-    })
-
-    .catch(function (error) {
-
-        console.error(
-            "Error registrando asistencia:",
-            error
-        );
-
-
-        mostrarMensaje(
-            error.message ||
-            "No fue posible registrar la asistencia.",
-            "error"
-        );
-
-
-        reactivarScanner();
-
-    });
+    }
 
 }
 
@@ -1098,18 +1311,31 @@ function limpiarTrabajador() {
         );
 
 
-    if (trabajador) {
-
-        trabajador.style.display =
-            "none";
-
-    }
-
-
     const nombre =
         document.getElementById(
             "nombreTrabajador"
         );
+
+
+    const rut =
+        document.getElementById(
+            "cargoTrabajador"
+        );
+
+
+    const rutManual =
+        document.getElementById(
+            "rutManual"
+        );
+
+
+    if (trabajador) {
+
+        trabajador.classList.add(
+            "oculto"
+        );
+
+    }
 
 
     if (nombre) {
@@ -1120,24 +1346,12 @@ function limpiarTrabajador() {
     }
 
 
-    const rut =
-        document.getElementById(
-            "rutTrabajador"
-        );
-
-
     if (rut) {
 
         rut.textContent =
             "";
 
     }
-
-
-    const rutManual =
-        document.getElementById(
-            "rutManual"
-        );
 
 
     if (rutManual) {
@@ -1148,106 +1362,91 @@ function limpiarTrabajador() {
     }
 
 
-    const botonEntrada =
+    deshabilitarBotones();
+
+
+    // ==================================
+    // LIMPIAR MENSAJE
+    // ==================================
+
+    const resultado =
         document.getElementById(
-            "btnEntrada"
+            "resultado"
         );
 
 
-    const botonSalida =
-        document.getElementById(
-            "btnSalida"
+    if (resultado) {
+
+        resultado.textContent =
+            "";
+
+        resultado.classList.remove(
+            "success",
+            "error",
+            "info"
         );
-
-
-    if (botonEntrada) {
-
-        botonEntrada.disabled =
-            true;
 
     }
 
 
-    if (botonSalida) {
-
-        botonSalida.disabled =
-            true;
-
-    }
-
-
-    reactivarScanner();
+    marcando =
+        false;
 
 }
 
 
 // ======================================
-// REACTIVAR ESCÁNER
+// DETENER SCANNER
 // ======================================
 
-function reactivarScanner() {
+async function detenerScanner() {
 
-    setTimeout(
-        function () {
-
-            scannerActivo =
-                true;
-
-        },
-        1000
-    );
-
-}
-
-
-// ======================================
-// MOSTRAR MENSAJE
-// ======================================
-
-function mostrarMensaje(
-    mensaje,
-    tipo
-) {
-
-    const elemento =
-        document.getElementById(
-            "mensaje"
-        );
-
-
-    if (!elemento) {
-
-        console.log(
-            mensaje
-        );
+    if (
+        !html5QrCode ||
+        !scannerActivo
+    ) {
 
         return;
 
     }
 
 
-    elemento.textContent =
-        mensaje;
+    try {
 
+        await html5QrCode.stop();
 
-    elemento.className =
-        "";
+        html5QrCode.clear();
 
+    }
 
-    if (tipo) {
+    catch (error) {
 
-        elemento.classList.add(
-            tipo
+        console.error(
+            "Error deteniendo scanner:",
+            error
         );
 
     }
 
 
-    console.log(
-        "Mensaje:",
-        mensaje,
-        "Tipo:",
-        tipo
-    );
+    html5QrCode =
+        null;
+
+    scannerActivo =
+        false;
+
+
+    const boton =
+        document.getElementById(
+            "btnScan"
+        );
+
+
+    if (boton) {
+
+        boton.innerHTML =
+            "📷 Escanear credencial";
+
+    }
 
 }
